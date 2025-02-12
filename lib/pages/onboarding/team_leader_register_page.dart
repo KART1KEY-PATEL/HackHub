@@ -20,6 +20,7 @@ class TeamRegisterPage extends StatefulWidget {
 class _TeamRegisterPageState extends State<TeamRegisterPage> {
   Backendservice _backendservice = Backendservice();
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late String teamName;
 
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -28,6 +29,18 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
   String selectedGender = 'Male';
   String selectedExternal = 'False';
   String teamSize = '2';
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Retrieve arguments safely here
+    final arguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    teamName = arguments['teamName'];
+
+    // Initialize controllers
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +177,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
             NextButton(
                 title: "Submit",
                 onTapFunction: () async {
-                  String teamName = "Hack-N-Droid";
                   String username = UserModel.generateUsername(
                       firstNameController.text, phoneNumberController.text);
                   String password =

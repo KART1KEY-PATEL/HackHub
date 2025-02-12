@@ -16,6 +16,18 @@ class _TeamDetailsState extends State<TeamDetails> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> teamMembersDetails = [];
   bool isLoading = true;
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+
+  //   // Retrieve arguments safely here
+  //   final arguments =
+  //       ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+  //   teamName = arguments['teamName'];
+
+  //   // Initialize controllers
+  // }
 
   @override
   void initState() {

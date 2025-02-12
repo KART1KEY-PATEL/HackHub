@@ -81,7 +81,9 @@ class TeamLeaderPage extends StatelessWidget {
 
                 if (teamDoc.exists) {
                   // If the team exists, proceed to the next screen
-                  Navigator.pushNamed(context, '/teamRegisterPage');
+                  Navigator.pushNamed(context, '/teamRegisterPage', arguments: {
+                    "teamName": enteredTeamName,
+                  });
                 } else {
                   // If the team does not exist, show an error
                   ScaffoldMessenger.of(context).showSnackBar(

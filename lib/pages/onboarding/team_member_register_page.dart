@@ -57,7 +57,7 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
               child: ListView.separated(
                 itemBuilder: (context, index) {
                   return Container(
-                    height: sH * 0.36,
+                    // height: sH * 0.36,
                     width: sW,
                     color: CustomColor.secondaryColor,
                     padding: EdgeInsets.all(10),
@@ -182,7 +182,9 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                     SnackBar(content: Text("Team members added successfully!")),
                   );
 
-                  Navigator.pushNamed(context, '/teamDetails');
+                  Navigator.pushNamed(context, '/teamDetails', arguments: {
+                    "teamName": teamName,
+                  });
                 })
           ],
         ),

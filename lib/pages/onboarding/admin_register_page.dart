@@ -127,71 +127,73 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            txt("First Name", size: sW * 0.035),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: firstNameController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(hintText: 'Enter First Name'),
-            ),
-            SizedBox(height: sH * 0.02),
-            txt("Last Name", size: sW * 0.035),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: lastNameController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(hintText: 'Enter Last Name'),
-            ),
-            SizedBox(height: sH * 0.02),
-            txt("Phone Number", size: sW * 0.035),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: phoneNumberController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(hintText: 'Enter Phone Number'),
-            ),
-            SizedBox(height: sH * 0.02),
-            txt("Username", size: sW * 0.035),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: userNameController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(hintText: 'Enter Username'),
-            ),
-            SizedBox(height: sH * 0.02),
-            txt("Password", size: sW * 0.035),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(hintText: 'Enter Password'),
-            ),
-            SizedBox(height: sH * 0.02),
-            txt("Admin Key", size: sW * 0.035),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: adminKeyController,
-              obscureText: true,
-              style: TextStyle(color: Colors.white),
-              decoration:
-                  InputDecoration(hintText: 'Enter admin shared by Kartikey'),
-            ),
-            SizedBox(height: sH * 0.02),
-            TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/adminLoginPage');
-                },
-                child: Text("Admin Login")),
-            NextButton(
-              title: isLoading ? "Signing Up..." : "Sign Up",
-              onTapFunction: signUpVolunteer,
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              txt("First Name", size: sW * 0.035),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: firstNameController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(hintText: 'Enter First Name'),
+              ),
+              SizedBox(height: sH * 0.02),
+              txt("Last Name", size: sW * 0.035),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: lastNameController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(hintText: 'Enter Last Name'),
+              ),
+              SizedBox(height: sH * 0.02),
+              txt("Phone Number", size: sW * 0.035),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: phoneNumberController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(hintText: 'Enter Phone Number'),
+              ),
+              SizedBox(height: sH * 0.02),
+              txt("Username", size: sW * 0.035),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: userNameController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(hintText: 'Enter Username'),
+              ),
+              SizedBox(height: sH * 0.02),
+              txt("Password", size: sW * 0.035),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(hintText: 'Enter Password'),
+              ),
+              SizedBox(height: sH * 0.02),
+              txt("Admin Key", size: sW * 0.035),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: adminKeyController,
+                obscureText: true,
+                style: TextStyle(color: Colors.white),
+                decoration:
+                    InputDecoration(hintText: 'Enter admin shared by Kartikey'),
+              ),
+              SizedBox(height: sH * 0.02),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/adminLoginPage');
+                  },
+                  child: Text("Admin Login")),
+              NextButton(
+                title: isLoading ? "Signing Up..." : "Sign Up",
+                onTapFunction: signUpVolunteer,
+              ),
+            ],
+          ),
         ),
       ),
     );

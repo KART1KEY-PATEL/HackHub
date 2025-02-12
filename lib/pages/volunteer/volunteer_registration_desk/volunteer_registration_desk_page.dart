@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hacknow/services/backend_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:hive/hive.dart';
-import 'package:hacknow/model/user_model.dart'; // Ensure you have UserModel imported
+import 'package:hacknow/model/user_model.dart';
 
 class VolunteerRegistrationDeskPage extends StatefulWidget {
   const VolunteerRegistrationDeskPage({super.key});
@@ -18,6 +19,8 @@ class _VolunteerRegistrationDeskPageState
   String? generatedUUID;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? currentUserId;
+  List<String> teamMembers = []; // Store team members
+  Backendservice _backendservice = Backendservice();
 
   @override
   void initState() {
@@ -51,12 +54,13 @@ class _VolunteerRegistrationDeskPageState
       // Store in Firestore
       await _firestore.collection("registrationQR").doc(newUUID).set({
         "generatedBy": currentUserId,
-        "teamName": "", // Leave blank for now
+        "teamName": "", // Initially empty
         "timestamp": FieldValue.serverTimestamp(),
       });
 
       setState(() {
         generatedUUID = newUUID;
+        teamMembers = []; // Reset team members when new QR is generated
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,39 +99,102 @@ class _VolunteerRegistrationDeskPageState
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-
-            // Show QR Code only if UUID is generated
             if (generatedUUID != null)
-              Column(
-                children: [
-                  QrImageView(
-                    data: generatedUUID!,
-                    size: 200,
-                    backgroundColor: Colors.white,
-                  ),
-                  const SizedBox(height: 10),
-                  SelectableText(
-                    "UUID: $generatedUUID",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+              StreamBuilder<DocumentSnapshot>(
+                stream: _firestore
+                    .collection("registrationQR")
+                    .doc(generatedUUID)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return CircularProgressIndicator();
+                  }
+
+                  var qrData = snapshot.data!;
+                  String teamName = qrData["teamName"] ?? "";
+
+                  // Fetch team members when teamName is assigned
+                  if (teamName.isNotEmpty && teamMembers.isEmpty) {
+                    _backendservice.fetchTeamMembers(teamName).then((members) {
+                      setState(() {
+                        teamMembers = members;
+                      });
+                    });
+                  }
+
+                  if (teamName.isNotEmpty) {
+                    return Column(
+                      children: [
+                        Icon(Icons.group, size: 100, color: Colors.greenAccent),
+                        const SizedBox(height: 10),
+                        Text(
+                          "✅ Team Assigned: $teamName",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ...teamMembers
+                            .map((member) => Text(
+                                  "• $member",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ))
+                            .toList(),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: generateQRCode,
+                          child: Text(
+                            "Generate New QR Code",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      QrImageView(
+                        data: generatedUUID!,
+                        size: 200,
+                        backgroundColor: Colors.white,
+                      ),
+                      const SizedBox(height: 10),
+                      SelectableText(
+                        "UUID: $generatedUUID",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  );
+                },
               ),
             const SizedBox(height: 20),
-
-            // Button to Generate QR Code
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            if (generatedUUID == null)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
+                onPressed: generateQRCode,
+                child: Text("Generate QR Code",
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
-              onPressed: generateQRCode,
-              child: Text("Generate QR Code",
-                  style: TextStyle(fontSize: 16, color: Colors.white)),
-            ),
           ],
         ),
       ),
