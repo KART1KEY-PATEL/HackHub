@@ -66,6 +66,7 @@ class _ParticipantBaseState extends State<ParticipantBase> {
             BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart),
               label: 'Leader Board',
+              
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.food_bank),

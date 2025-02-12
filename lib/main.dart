@@ -11,6 +11,8 @@ import 'package:hacknow/pages/onboarding/approval_page.dart';
 import 'package:hacknow/pages/onboarding/team_approval_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_login_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_signup_page.dart';
+import 'package:hacknow/pages/participants/participants_food/participants_food.dart';
+import 'package:hacknow/pages/participants/participants_food/qr_results_page.dart';
 import 'package:hacknow/pages/participants/paticipants_base/paticipants_base.dart';
 import 'package:hacknow/pages/onboarding/login_page.dart';
 import 'package:hacknow/pages/onboarding/splash_screen.dart';
@@ -19,8 +21,10 @@ import 'package:hacknow/pages/onboarding/team_member_login.dart';
 import 'package:hacknow/pages/onboarding/team_member_register_page.dart';
 import 'package:hacknow/pages/onboarding/team_leader_register_page.dart';
 import 'package:hacknow/pages/onboarding/user_type.dart';
+import 'package:hacknow/pages/participants/paticipants_home/paticipants_home_page.dart';
 import 'package:hacknow/pages/volunteer/volunteer_base/volunteer_base.dart';
 import 'package:hacknow/widgets/participant_qr_page.dart';
+import 'package:hacknow/pages/volunteer/volunteer_food/volunteer_food.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -116,6 +120,9 @@ class MyApp extends StatelessWidget {
         '/volunteerLoginPage': (context) => VolunteerLoginPage(),
         '/volunteerBase': (context) => VolunteerBase(),
         '/participantQrPage': (context) => ParticipantQrPage(),
+        '/participantFood': (context) => FoodScreen(),
+        "/participantHomePage": (context)=>ParticipantHomePage(),
+        "/volunteer_food_qr": (context)=>VolunteerFood()
       },
     );
   }
