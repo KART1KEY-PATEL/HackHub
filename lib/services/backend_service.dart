@@ -1,14 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gsheets/gsheets.dart';
-
-import 'package:provider/provider.dart';
 
 class Backendservice {
 // Load JSON credentials
@@ -21,13 +13,11 @@ class Backendservice {
 
   Future<List<String>> fetchTeamMembers(String teamName) async {
     final gsheets = await loadGoogleSheets();
-    final spreadsheetId =
-        "12Sg_pWzVrDoz-icj9cMQrmLcj6rd-J8ALUQRSfx6rFg"; // Replace with actual ID
+    final spreadsheetId = "12Sg_pWzVrDoz-icj9cMQrmLcj6rd-J8ALUQRSfx6rFg";
     final spreadsheet = await gsheets.spreadsheet(spreadsheetId);
 
     // Get the worksheet containing team data
-    final worksheet =
-        spreadsheet.worksheetByTitle('Teams'); // Change sheet name accordingly
+    final worksheet = spreadsheet.worksheetByTitle('Sheet1');
 
     if (worksheet == null) {
       print("Worksheet not found");

@@ -5,14 +5,16 @@ import 'package:hacknow/services/backend_service.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:hacknow/utils/next_button.dart';
 import 'package:hacknow/utils/text_util.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class TeamLeaderPage extends StatelessWidget {
   TeamLeaderPage({super.key});
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Backendservice _backendservice = Backendservice();
-  TextEditingController teamNameController = TextEditingController();
+  final Backendservice _backendservice = Backendservice();
+  final TextEditingController teamNameController = TextEditingController();
+  final Box teamBox = Hive.box('teamBox'); // Open Hive Box
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +52,8 @@ class TeamLeaderPage extends StatelessWidget {
                     const SizedBox(height: 8.0),
                     TextField(
                       controller: teamNameController,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         hintText:
                             '(Enter the exact same team name submitted on VIT Chennai Events)',
                       ),
@@ -68,7 +70,7 @@ class TeamLeaderPage extends StatelessWidget {
 
                 if (enteredTeamName.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please enter a team name")),
+                    const SnackBar(content: Text("Please enter a team name")),
                   );
                   return;
                 }
@@ -80,6 +82,9 @@ class TeamLeaderPage extends StatelessWidget {
                     .get();
 
                 if (teamDoc.exists) {
+                  // Store the team name in Hive
+                  teamBox.put('teamName', enteredTeamName);
+
                   // If the team exists, proceed to the next screen
                   Navigator.pushNamed(context, '/teamRegisterPage', arguments: {
                     "teamName": enteredTeamName,
@@ -87,13 +92,13 @@ class TeamLeaderPage extends StatelessWidget {
                 } else {
                   // If the team does not exist, show an error
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                         content: Text(
                             "Invalid team name. Please check and try again.")),
                   );
                 }
               },
-            )
+            ),
           ],
         ),
       ),
