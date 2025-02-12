@@ -1,0 +1,2 @@
+D:/hack-n-droid/app/Hack-N-Droid/android/app/.cxx/Debug/283v4r23/x86/CMakeFiles/edit_cache.dir
+D:/hack-n-droid/app/Hack-N-Droid/android/app/.cxx/Debug/283v4r23/x86/CMakeFiles/rebuild_cache.dir
