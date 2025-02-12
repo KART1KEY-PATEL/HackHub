@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hacknow/pages/participants/participants_food/qr_results_page.dart';
+import 'package:hacknow/services/backend_service.dart';
+import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -43,8 +46,8 @@ class _FoodScreenState extends State<FoodScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Scan QR Code for Food"),
+      appBar: customAppBar(
+        title: "Scan QR Code for Food",
         backgroundColor: Colors.blueAccent,
       ),
       body: Stack(
@@ -52,13 +55,17 @@ class _FoodScreenState extends State<FoodScreen> {
         children: [
           MobileScanner(
             controller: cameraController,
-            onDetect: (capture) {
+            onDetect: (capture) async {
               final List<Barcode> barcodes = capture.barcodes;
               if (barcodes.isNotEmpty) {
                 String scannedData = barcodes.first.rawValue ?? "";
                 // Handle the scanned qr
 
-                processScannedData(scannedData);
+                String errorMessage = await processScannedData(scannedData);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return QrResultsPage(errorMessage);
+                }));
               }
             },
           ),
@@ -74,12 +81,13 @@ class _FoodScreenState extends State<FoodScreen> {
     );
   }
 
-  void processScannedData(String scannedData) {
+  Future<String> processScannedData(String scannedData) async {
     //logic to handle the scanned qr
-    //
-    //
 
-    // Optionally, close the scanner after processing the data
-    Navigator.pop(context, scannedData);
+    Backendservice backend = Backendservice();
+    return await backend.giveFoodToUser(scannedData);
+
+    // // Optionally, close the scanner after processing the data
+    // Navigator.pop(context, scannedData);
   }
 }
