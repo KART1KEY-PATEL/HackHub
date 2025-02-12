@@ -106,7 +106,7 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
                           digitSize: 40.0,
                           height: 80,
                           spacing: EdgeInsets.all(2),
-                          width: sW * 0.1,
+                          width: sW * 0.09,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(3.0)),
                           onDone: () {

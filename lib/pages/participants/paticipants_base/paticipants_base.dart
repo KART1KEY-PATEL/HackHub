@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hacknow/constants/custom_color.dart';
+import 'package:hacknow/pages/participants/participant_team/participant_team_page.dart';
 import 'package:hacknow/pages/participants/paticipants_home/paticipants_home_page.dart';
 
 class ParticipantBase extends StatefulWidget {
@@ -12,6 +13,10 @@ class _ParticipantBaseState extends State<ParticipantBase> {
   bool isCompany = false;
   List _screens = [
     ParticipantHomePage(),
+    ParticipantTeamDetails(),
+    ParticipantTeamDetails(),
+    ParticipantTeamDetails(),
+    ParticipantTeamDetails(),
     // StorePage(),
     // TrainingPage(),
     // UpdatePage(),
