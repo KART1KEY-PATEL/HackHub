@@ -59,8 +59,8 @@ class _ParticipantBaseState extends State<ParticipantBase> {
               label: 'Profile',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.food_bank),
+              label: 'Food',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.abc),

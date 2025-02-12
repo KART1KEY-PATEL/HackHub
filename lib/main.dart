@@ -10,6 +10,7 @@ import 'package:hacknow/pages/onboarding/admin_register_page.dart';
 import 'package:hacknow/pages/onboarding/approval_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_login_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_signup_page.dart';
+import 'package:hacknow/pages/participants/participants_food/participants_food.dart';
 import 'package:hacknow/pages/participants/paticipants_base/paticipants_base.dart';
 import 'package:hacknow/pages/onboarding/login_page.dart';
 import 'package:hacknow/pages/onboarding/splash_screen.dart';
@@ -111,6 +112,7 @@ class MyApp extends StatelessWidget {
         '/adminLoginPage': (context) => AdminLoginPage(),
         '/volunteerLoginPage': (context) => VolunteerLoginPage(),
         '/volunteerBase': (context) => VolunteerBase(),
+        '/participantFood': (context) => FoodScreen(),
       },
     );
   }
