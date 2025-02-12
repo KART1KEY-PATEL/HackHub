@@ -51,24 +51,24 @@ class _ParticipantBaseState extends State<ParticipantBase> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
+              icon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.abc),
-              label: 'Profile',
+              label: '',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.bar_chart),
+              label: 'Leader Board',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.food_bank),
+              label: 'Food',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.people_alt),
+              label: 'Team',
             ),
           ],
         ),

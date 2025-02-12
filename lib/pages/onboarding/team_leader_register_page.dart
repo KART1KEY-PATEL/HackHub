@@ -79,7 +79,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                       decoration: InputDecoration(hintText: 'Kartikey'),
                     ),
                     SizedBox(height: sH * 0.02),
-
                     txt("Team Leader Last Name", size: sW * 0.035),
                     const SizedBox(height: 8.0),
                     TextField(
@@ -88,7 +87,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                       decoration: InputDecoration(hintText: 'Patel'),
                     ),
                     SizedBox(height: sH * 0.02),
-
                     txt("Team Leader Phone Number", size: sW * 0.035),
                     const SizedBox(height: 8.0),
                     TextField(
@@ -128,8 +126,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                       },
                     ),
                     SizedBox(height: sH * 0.02),
-
-                    // External Participant Dropdown
                     txt("External Participant", size: sW * 0.035),
                     const SizedBox(height: 8.0),
                     DropdownButtonFormField<String>(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hacknow/pages/onboarding/team_approval_page.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -12,27 +13,28 @@ class TeamDetails extends StatefulWidget {
 }
 
 class _TeamDetailsState extends State<TeamDetails> {
-  String teamName = "Hack-N-Droid";
+  late String teamName;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> teamMembersDetails = [];
   bool isLoading = true;
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-
-  //   // Retrieve arguments safely here
-  //   final arguments =
-  //       ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-  //   teamName = arguments['teamName'];
-
-  //   // Initialize controllers
-  // }
 
   @override
-  void initState() {
-    super.initState();
-    fetchTeamDetails();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final arguments =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (arguments != null && arguments.containsKey('teamName')) {
+      teamName = arguments['teamName'];
+      print("Team name: $teamName");
+
+      // Fetch team details after setting teamName
+      fetchTeamDetails();
+    } else {
+      print("Error: teamName argument is missing.");
+      setState(() => isLoading = false);
+    }
   }
 
   Future<void> fetchTeamDetails() async {
@@ -92,9 +94,10 @@ class _TeamDetailsState extends State<TeamDetails> {
       // Open Scanner after permission is granted
       String? scannedUUID = await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => QRScannerScreen()),
+        MaterialPageRoute(
+          builder: (context) => QRScannerScreen(),
+        ),
       );
-
       if (scannedUUID != null) {
         try {
           DocumentSnapshot qrDoc = await firestore
@@ -115,6 +118,14 @@ class _TeamDetailsState extends State<TeamDetails> {
               SnackBar(
                 content: Text("✅ Team name updated successfully!"),
                 backgroundColor: Colors.greenAccent,
+              ),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TeamApprovalPage(
+                  teamName: teamName,
+                ),
               ),
             );
           } else {
@@ -215,7 +226,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   @override
   void initState() {
     super.initState();
-    checkCameraPermission();
+    Future.delayed(Duration(milliseconds: 500), () {
+      checkCameraPermission();
+    });
   }
 
   // Check if camera permission is granted, else request
