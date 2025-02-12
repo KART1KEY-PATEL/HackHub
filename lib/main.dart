@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'PlusJakartaSans',
         useMaterial3: true,
       ),
-      initialRoute: '/volunteer_food_qr',
+      initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
         '/': (context) => UserTypeChoose(),
