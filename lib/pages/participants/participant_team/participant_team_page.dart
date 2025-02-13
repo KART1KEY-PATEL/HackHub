@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hacknow/constants/custom_color.dart';
+import 'package:hacknow/model/user_model.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:hacknow/utils/text_util.dart';
 import 'package:hive/hive.dart';
@@ -104,7 +105,19 @@ class _ParticipantTeamDetailsState extends State<ParticipantTeamDetails> {
     double sW = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: customAppBar(
-          title: teamName != null ? "$teamName Details" : "Team Details"),
+          title: teamName != null ? "$teamName Details" : "Team Details",
+          actions: [
+            IconButton(
+              onPressed: () async {
+                var userBox = Hive.box<UserModel>('userBox');
+                await userBox.clear();
+                Navigator.pushNamed(context, '/');
+              },
+              icon: Icon(
+                Icons.logout,
+              ),
+            ),
+          ]),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : teamMembersDetails.isEmpty

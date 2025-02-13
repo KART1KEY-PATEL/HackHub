@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flip_panel_plus/flip_panel_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/model/user_model.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:hacknow/utils/text_util.dart';
+import 'package:hacknow/widgets/timer.dart';
 import 'package:hive/hive.dart';
 
 class ParticipantHomePage extends StatefulWidget {
@@ -65,14 +65,6 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
             icon: const Icon(Icons.qr_code),
             color: CustomColor.primaryButtonColor,
           ),
-          TextButton(
-            onPressed: () async {
-              var userBox = Hive.box<UserModel>('userBox');
-              await userBox.clear();
-              Navigator.pushNamed(context, '/');
-            },
-            child: const Text("Logout"),
-          ),
         ],
       ),
       body: Padding(
@@ -83,7 +75,8 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
             txt(
               "Remaining Time",
               size: sW * 0.05,
-              isBold: true,
+              weight: FontWeight.w500,
+              // isBold: true,
             ),
             SizedBox(height: sH * 0.01),
             Center(
@@ -100,13 +93,18 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
                         )
                       : FlipClockPlus.reverseCountdown(
                           separator: SizedBox(width: sW * 0.01),
-                          duration: _timeRemaining,
+                          duration: Duration(
+                            hours: _timeRemaining
+                                .inHours, // Use total hours (ignores days)
+                            minutes: _timeRemaining.inMinutes.remainder(60),
+                            seconds: _timeRemaining.inSeconds.remainder(60),
+                          ),
                           digitColor: Colors.black,
                           backgroundColor: Colors.white,
-                          digitSize: 40.0,
-                          height: 80,
+                          digitSize: sW * 0.12,
+                          height: sH * 0.08,
                           spacing: EdgeInsets.all(2),
-                          width: sW * 0.09,
+                          width: sW * 0.13,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(3.0)),
                           onDone: () {
@@ -114,8 +112,12 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
                           },
                         ),
             ),
-            SizedBox(height: sH * 0.02),
-            txt("Announcements", size: sW * 0.05, isBold: true),
+            SizedBox(height: sH * 0.01),
+            txt(
+              "Announcements",
+              size: sW * 0.05,
+              weight: FontWeight.w500,
+            ),
 
             /// Announcements StreamBuilder
             Expanded(

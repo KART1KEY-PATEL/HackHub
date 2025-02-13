@@ -18,26 +18,51 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
   late int teamSize;
   late String teamName;
   late List<Map<String, dynamic>> memberControllers;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize an empty list, will update it in didChangeDependencies
+    memberControllers = [];
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Retrieve arguments safely here
     final arguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    teamSize = int.parse(arguments['teamSize']) - 1;
-    teamName = arguments['teamName'];
+    int newTeamSize = int.parse(arguments['teamSize']) - 1;
+    String newTeamName = arguments['teamName'];
 
-    // Initialize controllers
-    memberControllers = List.generate(
-      teamSize,
-      (index) => {
-        "firstName": TextEditingController(),
-        "phoneNumber": TextEditingController(),
-        "gender": "Male",
-      },
-    );
+    // Check if values have changed to prevent reinitialization
+    if (memberControllers.isEmpty ||
+        teamSize != newTeamSize ||
+        teamName != newTeamName) {
+      teamSize = newTeamSize;
+      teamName = newTeamName;
+
+      // Rebuild controllers only if needed to avoid clearing inputs
+      memberControllers = List.generate(
+        teamSize,
+        (index) => {
+          "firstName": TextEditingController(),
+          "phoneNumber": TextEditingController(),
+          "gender": "Male",
+        },
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers to prevent memory leaks
+    for (var controller in memberControllers) {
+      (controller["firstName"] as TextEditingController).dispose();
+      (controller["phoneNumber"] as TextEditingController).dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -50,7 +75,10 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
     return Scaffold(
       appBar: customAppBar(title: "Team Details"),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.symmetric(
+          vertical: sH * 0.02,
+          horizontal: sW * 0.02,
+        ),
         child: Column(
           children: [
             Expanded(
@@ -58,8 +86,11 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                 itemBuilder: (context, index) {
                   return Container(
                     // height: sH * 0.36,
+                    decoration: BoxDecoration(
+                      color: CustomColor.secondaryColor,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     width: sW,
-                    color: CustomColor.secondaryColor,
                     padding: EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +100,10 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                         TextField(
                           controller: memberControllers[index]['firstName'],
                           style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(hintText: 'Enter Name'),
+                          decoration: InputDecoration(
+                            hintText: 'Enter Name',
+                            fillColor: const Color.fromARGB(255, 60, 63, 73),
+                          ),
                         ),
                         SizedBox(height: sH * 0.02),
                         txt("Member Contact Number ${index + 1}",
@@ -78,17 +112,22 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                         TextField(
                           controller: memberControllers[index]['phoneNumber'],
                           style: TextStyle(color: Colors.white),
-                          decoration:
-                              InputDecoration(hintText: 'Enter Phone Number'),
+                          decoration: InputDecoration(
+                            hintText: 'Enter Phone Number',
+                            fillColor: const Color.fromARGB(255, 60, 63, 73),
+                          ),
                         ),
                         SizedBox(height: sH * 0.02),
                         txt("Member Gender ${index + 1}", size: sW * 0.035),
                         const SizedBox(height: 8.0),
                         DropdownButtonFormField<String>(
                           value: memberControllers[index]['gender'],
-                          dropdownColor: Colors.grey[900],
-                          decoration:
-                              InputDecoration(border: OutlineInputBorder()),
+                          dropdownColor: const Color.from(
+                              alpha: 1, red: 0.129, green: 0.129, blue: 0.129),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            fillColor: const Color.fromARGB(255, 60, 63, 73),
+                          ),
                           items: ['Male', 'Female']
                               .map((label) => DropdownMenuItem(
                                     child: Text(label,

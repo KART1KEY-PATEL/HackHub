@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/pages/onboarding/team_approval_page.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
+import 'package:hacknow/utils/text_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -27,7 +29,6 @@ class _TeamDetailsState extends State<TeamDetails> {
 
     if (arguments != null && arguments.containsKey('teamName')) {
       teamName = arguments['teamName'];
-      print("Team name: $teamName");
 
       // Fetch team details after setting teamName
       fetchTeamDetails();
@@ -158,6 +159,8 @@ class _TeamDetailsState extends State<TeamDetails> {
 
   @override
   Widget build(BuildContext context) {
+    double sH = MediaQuery.of(context).size.height;
+    double sW = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: customAppBar(title: "$teamName Details"),
       body: isLoading
@@ -167,23 +170,91 @@ class _TeamDetailsState extends State<TeamDetails> {
               : Column(
                   children: [
                     Expanded(
-                      child: ListView.builder(
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) {
+                          return SizedBox(
+                            height: sH * 0.01,
+                          );
+                        },
                         itemCount: teamMembersDetails.length,
                         itemBuilder: (context, index) {
                           var member = teamMembersDetails[index];
-                          return Card(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            child: ListTile(
-                              title: Text(member["name"]),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Username: ${member["username"]}"),
-                                  Text("Password: ${member["password"]}"),
-                                ],
+
+                          return Stack(
+                            children: [
+                              Container(
+                                // height: sH * 0.,
+                                padding: EdgeInsets.all(10),
+                                width: sW,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: CustomColor.secondaryColor,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // SizedBox(
+                                        //   height: sH * 0.02,
+                                        // ),
+                                        txt("Name: ${member["name"]}",
+                                            size: sW * 0.05, isBold: true),
+                                        txt(
+                                          "Username: ${member["username"]}",
+                                          size: sW * 0.04,
+                                        ),
+                                        txt(
+                                          "Password: ${member["password"]}",
+                                          size: sW * 0.04,
+                                        ),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    Column(
+                                      children: [
+                                        SizedBox(
+                                          height: sH * 0.02,
+                                        ),
+                                        Icon(
+                                          Icons.person,
+                                          size: sW * 0.2,
+                                          color: CustomColor.primaryButtonColor,
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: index == 0
+                                        ? Colors.red
+                                        : CustomColor.secondaryButtonColor,
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(10),
+                                      bottomLeft: Radius.circular(10),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: sW * 0.03,
+                                    vertical: sH * 0.004,
+                                  ),
+                                  child: txt(
+                                    index == 0 ? "Team Leader" : "Team Members",
+                                    size: sH * 0.018,
+                                    color: index == 0
+                                        ? Colors.white
+                                        : Colors.black,
+                                    isBold: true,
+                                  ),
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),

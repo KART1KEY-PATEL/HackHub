@@ -224,7 +224,7 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                   UserModel user = UserModel(
                     id: userId,
                     approved: true,
-                    userType: "participany",
+                    userType: "participant",
                     firstName: firstNameController.text,
                     lastName: lastNameController.text,
                     phoneNumber: phoneNumberController.text,

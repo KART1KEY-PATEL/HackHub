@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/controller/user_controller.dart';
 import 'package:hacknow/services/backend_service.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
@@ -40,15 +41,19 @@ class TeamLeaderPage extends StatelessWidget {
         padding: EdgeInsets.all(sW * 0.04),
         child: Column(
           children: [
-            txt("UserType: ${userController.user!.userType}"),
             Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    txt("Team Name (Enter the exact same team name submitted on VIT Chennai Events)",
-                        size: sW * 0.035),
+                    txt(
+                      "Team Name",
+                      size: sW * 0.038,
+                      weight: FontWeight.w600,
+                    ),
+                    txt("(Enter the exact same team name submitted on VIT Chennai Events)",
+                        size: sW * 0.035, color: CustomColor.accentTextColor),
                     const SizedBox(height: 8.0),
                     TextField(
                       controller: teamNameController,
@@ -86,9 +91,10 @@ class TeamLeaderPage extends StatelessWidget {
                   teamBox.put('teamName', enteredTeamName);
 
                   // If the team exists, proceed to the next screen
-                  Navigator.pushNamed(context, '/teamRegisterPage', arguments: {
-                    "teamName": enteredTeamName,
-                  });
+                  Navigator.pushReplacementNamed(context, '/teamRegisterPage',
+                      arguments: {
+                        "teamName": enteredTeamName,
+                      });
                 } else {
                   // If the team does not exist, show an error
                   ScaffoldMessenger.of(context).showSnackBar(

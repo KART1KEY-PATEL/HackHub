@@ -105,7 +105,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
-        '/': (context) => UserTypeChoose(),
+        // '/': (context) => UserTypeChoose(),
         '/teamLeaderPage': (context) => TeamLeaderPage(),
         '/teamRegisterPage': (context) => TeamRegisterPage(),
         '/teamMemberPage': (context) => TeamMemberPage(),
@@ -121,8 +121,8 @@ class MyApp extends StatelessWidget {
         '/volunteerBase': (context) => VolunteerBase(),
         '/participantQrPage': (context) => ParticipantQrPage(),
         '/participantFood': (context) => FoodScreen(),
-        "/participantHomePage": (context)=>ParticipantHomePage(),
-        "/volunteer_food_qr": (context)=>VolunteerFood()
+        "/participantHomePage": (context) => ParticipantHomePage(),
+        "/volunteer_food_qr": (context) => VolunteerFood()
       },
     );
   }
