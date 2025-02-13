@@ -142,10 +142,9 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
 
                   return ListView.builder(
                     itemCount: messages.length,
-                    physics: NeverScrollableScrollPhysics(),
+                    // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       var message = messages[index];
-
                       return Card(
                         color: CustomColor.secondaryColor,
                         margin: const EdgeInsets.symmetric(

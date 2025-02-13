@@ -71,7 +71,8 @@ class TeamLeaderPage extends StatelessWidget {
             NextButton(
               title: "Start",
               onTapFunction: () async {
-                String enteredTeamName = teamNameController.text.trim();
+                String enteredTeamName =
+                    teamNameController.text.trim().toUpperCase();
 
                 if (enteredTeamName.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(

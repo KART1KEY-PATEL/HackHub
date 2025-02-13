@@ -105,19 +105,20 @@ class _ParticipantTeamDetailsState extends State<ParticipantTeamDetails> {
     double sW = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: customAppBar(
-          title: teamName != null ? "$teamName Details" : "Team Details",
-          actions: [
-            IconButton(
-              onPressed: () async {
-                var userBox = Hive.box<UserModel>('userBox');
-                await userBox.clear();
-                Navigator.pushNamed(context, '/');
-              },
-              icon: Icon(
-                Icons.logout,
-              ),
+        title: teamName != null ? "$teamName Details" : "Team Details",
+        actions: [
+          IconButton(
+            onPressed: () async {
+              var userBox = Hive.box<UserModel>('userBox');
+              await userBox.clear();
+              Navigator.pushNamed(context, '/splash');
+            },
+            icon: Icon(
+              Icons.logout,
             ),
-          ]),
+          ),
+        ],
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : teamMembersDetails.isEmpty

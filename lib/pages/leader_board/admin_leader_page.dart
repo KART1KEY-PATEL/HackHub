@@ -4,14 +4,14 @@ import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:hacknow/utils/text_util.dart';
 
-class LeaderBoardPage extends StatefulWidget {
-  const LeaderBoardPage({super.key});
+class AdminLeaderBoardPage extends StatefulWidget {
+  const AdminLeaderBoardPage({super.key});
 
   @override
-  State<LeaderBoardPage> createState() => _LeaderBoardPageState();
+  State<AdminLeaderBoardPage> createState() => _AdminLeaderBoardPageState();
 }
 
-class _LeaderBoardPageState extends State<LeaderBoardPage> {
+class _AdminLeaderBoardPageState extends State<AdminLeaderBoardPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Map<String, dynamic>>> fetchScores() async {

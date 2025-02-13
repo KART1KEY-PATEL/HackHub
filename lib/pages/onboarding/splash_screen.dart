@@ -161,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen> {
               return Text("Team data not found",
                   style: TextStyle(color: Colors.white));
             }
-
+            
             bool isRegistered = snapshot.data!['registered'] ?? false;
 
             // Navigate based on the team's registration status

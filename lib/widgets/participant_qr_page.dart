@@ -55,7 +55,7 @@ class _ParticipantQrPageState extends State<ParticipantQrPage> {
                   ),
                   const SizedBox(height: 20),
                   QrImageView(
-                    data: teamName!,
+                    data: teamName!.toUpperCase(),
                     version: QrVersions.auto,
                     size: 300.0,
                     backgroundColor: Colors.white,
