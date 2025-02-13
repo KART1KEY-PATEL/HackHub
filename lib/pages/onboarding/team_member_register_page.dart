@@ -221,9 +221,12 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                     SnackBar(content: Text("Team members added successfully!")),
                   );
 
-                  Navigator.pushNamed(context, '/teamDetails', arguments: {
-                    "teamName": teamName,
-                  });
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/teamDetails',
+                    (route) => false, // This removes all previous routes
+                    arguments: {"teamName": teamName},
+                  );
                 })
           ],
         ),
