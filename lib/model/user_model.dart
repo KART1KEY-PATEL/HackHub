@@ -30,6 +30,8 @@ class UserModel {
   final bool approved;
   @HiveField(10)
   final String id;
+  @HiveField(11)
+  final String teamId;
 
   UserModel({
     required this.userType,
@@ -43,6 +45,7 @@ class UserModel {
     required this.password,
     required this.approved,
     required this.id,
+    required this.teamId,
   });
 
   // Ensure `fromJson` handles missing values properly
@@ -58,7 +61,8 @@ class UserModel {
       username: json["username"] ?? "Unknown",
       password: json["password"] ?? "Unknown@1234",
       approved: json['approved'] ?? false,
-      id: json['id'] ?? ""
+      id: json['id'] ?? "",
+      teamId: json['teamId'] ?? ""
     );
   }
 

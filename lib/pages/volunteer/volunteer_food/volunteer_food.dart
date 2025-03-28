@@ -31,7 +31,7 @@ class _VolunteerFoodState extends State<VolunteerFood> {
               child: QrImageView(
                 data: volunteerUuid,
                 version: QrVersions.auto,
-                size: 200.0,
+                size: 350.0,
                 backgroundColor: Colors.white,
               ),
             );

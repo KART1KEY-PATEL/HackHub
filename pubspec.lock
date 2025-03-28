@@ -573,6 +573,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  loading_indicator:
+    dependency: "direct main"
+    description:
+      name: loading_indicator
+      sha256: a101ffb2aa3e646137d7810bfa90b50525dd3f72c01235b6df7491cf6af6f284
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   logging:
     dependency: transitive
     description:
@@ -837,6 +845,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  rename_app:
+    dependency: "direct dev"
+    description:
+      name: rename_app
+      sha256: "7cb304cea0b3cbcc332eab80b21df3c168f25ee47e59e22f88c52476e8ae3e97"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.2"
   shelf:
     dependency: transitive
     description:

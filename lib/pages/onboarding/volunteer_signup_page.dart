@@ -73,6 +73,7 @@ class _VolunteerSignupPageState extends State<VolunteerSignupPage> {
 
       // Store in Hive for session management
       UserModel user = UserModel(
+        teamId: "",
         approved: false,
         id: userId,
         userType: "volunteer",

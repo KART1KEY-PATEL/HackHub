@@ -48,7 +48,6 @@ class _FoodScreenState extends State<FoodScreen> {
     return Scaffold(
       appBar: customAppBar(
         title: "Scan QR Code for Food",
-        backgroundColor: Colors.blueAccent,
       ),
       body: Stack(
         alignment: Alignment.center,
@@ -59,13 +58,14 @@ class _FoodScreenState extends State<FoodScreen> {
               final List<Barcode> barcodes = capture.barcodes;
               if (barcodes.isNotEmpty) {
                 String scannedData = barcodes.first.rawValue ?? "";
-                // Handle the scanned qr
-
+                cameraController.stop();
                 String errorMessage = await processScannedData(scannedData);
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return QrResultsPage(errorMessage);
-                }));
+                if (mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => QrResultsPage(errorMessage)),
+                  );
+                }
               }
             },
           ),

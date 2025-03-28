@@ -84,6 +84,7 @@ class _AdminRegisterPageState extends State<AdminRegisterPage> {
 
       // Store in Hive for session management
       UserModel user = UserModel(
+        teamId: "",
         approved: true,
         id: userId,
         userType: "admin",

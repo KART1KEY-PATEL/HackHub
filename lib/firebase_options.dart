@@ -56,19 +56,19 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDfWNuua-ZsUBp6KmbYSsgPefnnruzrcwM',
-    appId: '1:868734694185:android:e3e80b2d89f04392d03d38',
-    messagingSenderId: '868734694185',
-    projectId: 'hack-now-dfc21',
-    storageBucket: 'hack-now-dfc21.firebasestorage.app',
+    apiKey: 'AIzaSyDsYLhfW0GWVVQNS878XNYIRmURTbOqcMc',
+    appId: '1:990042039273:android:1b697d379f2159711ba178',
+    messagingSenderId: '990042039273',
+    projectId: 'devshouse-25',
+    storageBucket: 'devshouse-25.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDi9VpCrqMswFkqJqLwSTb7Gy5USv-uAX4',
-    appId: '1:868734694185:ios:d66a2cf436d8b827d03d38',
-    messagingSenderId: '868734694185',
-    projectId: 'hack-now-dfc21',
-    storageBucket: 'hack-now-dfc21.firebasestorage.app',
+    apiKey: 'AIzaSyCNXaNs7BYpwWbRDpH3AQpwXpIu3uQO7zk',
+    appId: '1:990042039273:ios:4eb00a3f7ce0f8361ba178',
+    messagingSenderId: '990042039273',
+    projectId: 'devshouse-25',
+    storageBucket: 'devshouse-25.firebasestorage.app',
     iosBundleId: 'com.example.hacknow',
   );
 

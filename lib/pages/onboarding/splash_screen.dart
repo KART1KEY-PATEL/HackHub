@@ -23,7 +23,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+
+    Future.delayed(Duration(seconds: 2), () {
+      _loadUserData();
+    });
   }
 
   /// Load user data from Hive storage
@@ -93,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else if (currentUser!.userType == "volunteer") {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => VolunteerBase()),
+          MaterialPageRoute(builder: (context) => ApprovalPage()),
         );
       } else if (currentUser!.userType == "participant" && teamName == null) {
         Navigator.pushReplacement(
@@ -121,7 +124,21 @@ class _SplashScreenState extends State<SplashScreen> {
       return Scaffold(
         backgroundColor: const Color(0xFF1A1A24),
         body: Center(
-          child: CircularProgressIndicator(color: Color(0xFF4362FF)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                "assets/splash_logo.png",
+                height: 200,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              CircularProgressIndicator(
+                color: Color(0xFF4362FF),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -161,7 +178,7 @@ class _SplashScreenState extends State<SplashScreen> {
               return Text("Team data not found",
                   style: TextStyle(color: Colors.white));
             }
-            
+
             bool isRegistered = snapshot.data!['registered'] ?? false;
 
             // Navigate based on the team's registration status

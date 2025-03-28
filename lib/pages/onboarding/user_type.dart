@@ -26,11 +26,11 @@ class UserTypeChoose extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: sH * 0.22,
+              height: sH * 0.2,
             ),
             Center(
                 child: Image.asset("assets/splash_logo.png",
-                    height: 120)), // App Logo
+                    height: 220)), // App Logo
             SizedBox(
               height: sH * 0.02,
             ),
@@ -89,6 +89,7 @@ class UserTypeChoose extends StatelessWidget {
                           onTap: () {
                             context.read<UserController>().setUser(
                                   UserModel(
+                                    teamId: "",
                                     id: '',
                                     password: "",
                                     username: "",
@@ -110,7 +111,7 @@ class UserTypeChoose extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                             ),
                             padding: EdgeInsets.symmetric(
-                                horizontal: sW * 0.07, vertical: sH * 0.012),
+                                horizontal: sW * 0.06, vertical: sH * 0.012),
                             child: Row(
                               children: [
                                 SvgPicture.asset(
@@ -135,6 +136,7 @@ class UserTypeChoose extends StatelessWidget {
                           onTap: () {
                             context.read<UserController>().setUser(
                                   UserModel(
+                                    teamId: "",
                                     id: '',
                                     password: "",
                                     username: "",
@@ -177,7 +179,7 @@ class UserTypeChoose extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: sH * 0.054,
+                    height: sH * 0.04,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -190,6 +192,7 @@ class UserTypeChoose extends StatelessWidget {
                         onTap: () {
                           context.read<UserController>().setUser(
                                 UserModel(
+                                  teamId: "",
                                   id: '',
                                   password: "",
                                   username: "",
@@ -223,6 +226,7 @@ class UserTypeChoose extends StatelessWidget {
                         onTap: () {
                           context.read<UserController>().setUser(
                                 UserModel(
+                                  teamId: "",
                                   id: '',
                                   password: "",
                                   username: "",

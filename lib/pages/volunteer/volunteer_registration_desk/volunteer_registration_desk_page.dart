@@ -1,6 +1,11 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/services/backend_service.dart';
+import 'package:hacknow/utils/custom_app_bar.dart';
+import 'package:hacknow/utils/text_util.dart';
 import 'package:uuid/uuid.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:hive/hive.dart';
@@ -20,6 +25,10 @@ class _VolunteerRegistrationDeskPageState
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? currentUserId;
   List<String> teamMembers = [];
+  List<String> teamMemberEmails = []; // Store email addresses
+  Map<String, bool> checkboxStatesIOS = {}; // Stores IOS User Checkbox states
+  Map<String, bool> checkboxStatesAttendance = {};
+
   String? assignedTeamName;
   Backendservice _backendservice = Backendservice();
   Map<String, bool> checkboxStates = {}; // Store checkbox states
@@ -38,7 +47,6 @@ class _VolunteerRegistrationDeskPageState
   }
 
   Future<void> generateQRCode() async {
-    print("QR Geneated");
     if (currentUserId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -85,11 +93,13 @@ class _VolunteerRegistrationDeskPageState
   Future<void> fetchTeamMembers() async {
     if (assignedTeamName != null && assignedTeamName!.isNotEmpty) {
       try {
-        List<String> members =
+        Map<String, String> members =
             await _backendservice.fetchTeamMembers(assignedTeamName!);
+
         setState(() {
-          teamMembers = members;
-          checkboxStates = {for (var member in members) member: false};
+          teamMembers = members.keys.toList(); // Store Names
+          teamMemberEmails = members.values.toList(); // Store Emails
+          checkboxStates = {for (var member in members.keys) member: false};
         });
       } catch (e) {
         print("Error fetching team members: $e");
@@ -118,146 +128,259 @@ class _VolunteerRegistrationDeskPageState
     }
   }
 
+  Future<void> markTeamRegistered() async {
+    if (assignedTeamName == null) return;
+
+    await _firestore.collection("teams").doc(assignedTeamName).update({
+      "registered": true,
+    });
+
+    // Mark Attendance
+    for (String email in teamMemberEmails) {
+      String status = checkboxStatesAttendance[email] == true ? "P" : "A";
+      await _backendservice.updateAttendance(email, status);
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("✅ Team Registered Successfully!"),
+        backgroundColor: Colors.greenAccent,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    double sH = MediaQuery.of(context).size.height;
+    double sW = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Volunteer Registration Desk"),
-        backgroundColor: Colors.blueAccent,
+      appBar: customAppBar(
+        title: ("Volunteer Registration Desk"),
+        // backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Generate a QR Code for Registration",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            if (generatedUUID != null)
-              StreamBuilder<DocumentSnapshot>(
-                stream: _firestore
-                    .collection("registrationQR")
-                    .doc(generatedUUID)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data == null) {
-                    return CircularProgressIndicator();
-                  }
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Generate a QR Code for Registration",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              if (generatedUUID != null)
+                StreamBuilder<DocumentSnapshot>(
+                  stream: _firestore
+                      .collection("registrationQR")
+                      .doc(generatedUUID)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data == null) {
+                      return CircularProgressIndicator();
+                    }
 
-                  var qrData = snapshot.data!;
+                    var qrData = snapshot.data!;
 
-                  // Ensure we update assignedTeamName only after the build cycle
-                  if (qrData.exists && qrData.data() != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      setState(() {
-                        assignedTeamName = qrData["teamName"];
+                    // Ensure we update assignedTeamName only after the build cycle
+                    if (qrData.exists && qrData.data() != null) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          assignedTeamName = qrData["teamName"];
+                        });
                       });
-                    });
-                  }
+                    }
 
-                  if (assignedTeamName != null &&
-                      assignedTeamName!.isNotEmpty) {
-                    return Column(
-                      children: [
-                        Icon(Icons.group, size: 100, color: Colors.greenAccent),
-                        const SizedBox(height: 10),
-                        Text(
-                          "✅ Team Assigned: $assignedTeamName",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    if (assignedTeamName != null &&
+                        assignedTeamName!.isNotEmpty) {
+                      return Column(
+                        children: [
+                          Icon(Icons.group,
+                              size: 100, color: Colors.greenAccent),
+                          const SizedBox(height: 10),
+                          Text(
+                            "✅ Team Assigned: $assignedTeamName",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        if (teamMembers.isNotEmpty)
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.3,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: teamMembers.length,
-                              itemBuilder: (context, index) {
-                                String member = teamMembers[index];
-                                return ListTile(
-                                  title: Text(
-                                    member,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
+                          const SizedBox(height: 20),
+                          if (teamMembers.isNotEmpty)
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    txt("Details"),
+                                    Spacer(),
+                                    txt(
+                                      "IOS",
                                     ),
-                                  ),
-                                  trailing: Checkbox(
-                                    value: checkboxStates[member] ?? false,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        checkboxStates[member] = value!;
-                                      });
-                                      _updateRegistrationStatus();
+                                    SizedBox(
+                                      width: sW * 0.08,
+                                    ),
+                                    txt("P"),
+                                    SizedBox(
+                                      width: sW * 0.06,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  child: ListView.separated(
+                                    separatorBuilder: (context, index) =>
+                                        SizedBox(height: sH * 0.02),
+                                    shrinkWrap: true,
+                                    itemCount: teamMembers.length,
+                                    itemBuilder: (context, index) {
+                                      String member = teamMembers[index];
+                                      String email = teamMemberEmails[index];
+
+                                      return Container(
+                                        padding: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: CustomColor.secondaryColor,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            SizedBox(
+                                              width: sW * 0.5,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  txt(member,
+                                                      size: sW * 0.04,
+                                                      maxLine: 1), // Name
+                                                  txt(email,
+                                                      size: sW * 0.03,
+                                                      color: Colors.grey,
+                                                      maxLine: 1), // Email
+                                                ],
+                                              ),
+                                            ),
+                                            Spacer(),
+
+                                            // ✅ First Checkbox - IOS Users
+                                            Checkbox(
+                                              value: checkboxStatesIOS[email] ??
+                                                  false,
+                                              onChanged: (bool? value) {
+                                                setState(() {
+                                                  checkboxStatesIOS[email] =
+                                                      value!;
+                                                });
+                                                _backendservice
+                                                    .updateIOSUserStatus(
+                                                        email, value!);
+                                              },
+                                            ),
+
+                                            // ✅ Second Checkbox - Attendance
+                                            Checkbox(
+                                              value: checkboxStatesAttendance[
+                                                      email] ??
+                                                  false,
+                                              onChanged: (bool? value) {
+                                                setState(() {
+                                                  checkboxStatesAttendance[
+                                                      email] = value!;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     },
                                   ),
-                                );
-                              },
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    await markTeamRegistered();
+                                  },
+                                  child: Text(
+                                    "Mark Team Registered",
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: fetchTeamMembers,
+                            child: Text(
+                              teamMembers.isEmpty
+                                  ? "Fetch Team Members"
+                                  : "Refresh Team Members",
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white),
                             ),
                           ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: fetchTeamMembers,
-                          child: Text(
-                            teamMembers.isEmpty
-                                ? "Fetch Team Members"
-                                : "Refresh Team Members",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
+                        ],
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        QrImageView(
+                          data: generatedUUID!,
+                          size: 200,
+                          backgroundColor: Colors.white,
+                        ),
+                        const SizedBox(height: 10),
+                        SelectableText(
+                          "UUID: $generatedUUID",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     );
-                  }
-
-                  return Column(
-                    children: [
-                      QrImageView(
-                        data: generatedUUID!,
-                        size: 200,
-                        backgroundColor: Colors.white,
-                      ),
-                      const SizedBox(height: 10),
-                      SelectableText(
-                        "UUID: $generatedUUID",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  );
-                },
-              ),
-            const SizedBox(height: 20),
-            // if (generatedUUID == null)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  },
+                ),
+              const SizedBox(height: 20),
+              // if (generatedUUID == null)
+              GestureDetector(
+                onTap: generateQRCode,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: CustomColor.primaryButtonColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: sW * 0.08,
+                    vertical: sH * 0.01,
+                  ),
+                  margin: EdgeInsets.symmetric(
+                    horizontal: sW * 0.2,
+                  ),
+                  child: Text("Generate QR Code",
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
               ),
-              onPressed: generateQRCode,
-              child: Text("Generate QR Code",
-                  style: TextStyle(fontSize: 16, color: Colors.white)),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

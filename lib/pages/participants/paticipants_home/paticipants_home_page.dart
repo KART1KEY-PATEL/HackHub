@@ -95,7 +95,7 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
                           separator: SizedBox(width: sW * 0.01),
                           duration: Duration(
                             hours: _timeRemaining
-                                .inHours, // Use total hours (ignores days)
+                                .inHours, // Converts all time to total hours
                             minutes: _timeRemaining.inMinutes.remainder(60),
                             seconds: _timeRemaining.inSeconds.remainder(60),
                           ),

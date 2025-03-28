@@ -51,6 +51,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           if (userData["password"] == enteredPassword) {
             // Successful login, save user data in Hive
             UserModel user = UserModel(
+              teamId: "",
               userType: userData["userType"] ?? "admin",
               firstName: userData["firstName"] ?? "",
               lastName: userData["lastName"] ?? "",

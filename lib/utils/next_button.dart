@@ -8,28 +8,34 @@ class NextButton extends StatelessWidget {
     this.navigateTo = "",
     required this.title,
     required this.onTapFunction,
+    this.isLoading = false, // Add isLoading parameter
   });
+
   final String navigateTo;
   final String title;
   final bool lastPage;
-  VoidCallback onTapFunction;
+  final bool isLoading; // Track loading state
+  final VoidCallback onTapFunction;
 
   @override
   Widget build(BuildContext context) {
     double sH = MediaQuery.of(context).size.height;
     double sW = MediaQuery.of(context).size.width;
+
     return InkWell(
-      onTap: () {
-        onTapFunction();
-        if (navigateTo != "") {
-          navigateTo.length != 0
-              ? lastPage
-                  ? Navigator.of(context).pushNamedAndRemoveUntil(
-                      navigateTo, (Route<dynamic> route) => false)
-                  : Navigator.pushNamed(context, navigateTo)
-              : print("No route specified");
-        }
-      },
+      onTap: isLoading
+          ? null // Disable tap when loading
+          : () {
+              onTapFunction();
+              if (navigateTo != "") {
+                navigateTo.length != 0
+                    ? lastPage
+                        ? Navigator.of(context).pushNamedAndRemoveUntil(
+                            navigateTo, (Route<dynamic> route) => false)
+                        : Navigator.pushNamed(context, navigateTo)
+                    : print("No route specified");
+              }
+            },
       child: Container(
         height: sH * 0.07,
         width: sW,
@@ -38,11 +44,15 @@ class NextButton extends StatelessWidget {
           color: const Color(0xff4362FF),
         ),
         child: Center(
-          child: txt(
-            title,
-            weight: FontWeight.w600,
-            size: sW * 0.04,
-          ),
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : txt(
+                  title,
+                  weight: FontWeight.w600,
+                  size: sW * 0.04,
+                ),
         ),
       ),
     );

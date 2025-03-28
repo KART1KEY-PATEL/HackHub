@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "868734694185",
-    "project_id": "hack-now-dfc21",
-    "storage_bucket": "hack-now-dfc21.firebasestorage.app"
+    "project_number": "990042039273",
+    "project_id": "devshouse-25",
+    "storage_bucket": "devshouse-25.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:868734694185:android:e3e80b2d89f04392d03d38",
+        "mobilesdk_app_id": "1:990042039273:android:1b697d379f2159711ba178",
         "android_client_info": {
           "package_name": "com.example.hacknow"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDfWNuua-ZsUBp6KmbYSsgPefnnruzrcwM"
+          "current_key": "AIzaSyDsYLhfW0GWVVQNS878XNYIRmURTbOqcMc"
         }
       ],
       "services": {

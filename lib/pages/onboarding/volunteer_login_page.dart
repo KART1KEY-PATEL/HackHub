@@ -51,6 +51,7 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
           if (userData["password"] == enteredPassword) {
             // Successful login, save user data in Hive
             UserModel user = UserModel(
+              teamId: userData["teamId"] ?? "",
               userType: userData["userType"] ?? "admin",
               firstName: userData["firstName"] ?? "",
               lastName: userData["lastName"] ?? "",
@@ -74,7 +75,7 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
             );
 
             // Navigate to home page after login
-            Navigator.pushReplacementNamed(context, '/volunteerBase');
+            Navigator.pushReplacementNamed(context, '/approvalPage');
             return;
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -110,7 +111,7 @@ class _VolunteerLoginPageState extends State<VolunteerLoginPage> {
     var sH = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: customAppBar(
-        title: "Admin Login",
+        title: "Volunteer Login",
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

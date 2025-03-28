@@ -9,19 +9,28 @@ import 'package:hacknow/utils/text_util.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-class TeamLeaderPage extends StatelessWidget {
+class TeamLeaderPage extends StatefulWidget {
   TeamLeaderPage({super.key});
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Backendservice _backendservice = Backendservice();
-  final TextEditingController teamNameController = TextEditingController();
-  final Box teamBox = Hive.box('teamBox'); // Open Hive Box
+  @override
+  State<TeamLeaderPage> createState() => _TeamLeaderPageState();
+}
 
+class _TeamLeaderPageState extends State<TeamLeaderPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  final Backendservice _backendservice = Backendservice();
+
+  final TextEditingController teamNameController = TextEditingController();
+
+  final Box teamBox = Hive.box('teamBox');
+  bool isLoading = false;
+  int countH = 0;
+  // Open Hive Box
   @override
   Widget build(BuildContext context) {
     UserController userController =
         Provider.of<UserController>(context, listen: false);
-
     var sW = MediaQuery.of(context).size.width;
     var sH = MediaQuery.of(context).size.height;
 
@@ -30,7 +39,7 @@ class TeamLeaderPage extends StatelessWidget {
         title: "Login",
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: isLoading ? null : () => Navigator.pop(context),
           icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
@@ -70,39 +79,59 @@ class TeamLeaderPage extends StatelessWidget {
             ),
             NextButton(
               title: "Start",
+              isLoading: isLoading, // Pass loading state to button
+
               onTapFunction: () async {
-                String enteredTeamName =
-                    teamNameController.text.trim().toUpperCase();
+                if (isLoading) return;
+                setState(() {
+                  countH++;
+                });
+                print("NUMBER OF TIMES THE BUTTON PRESSED: ${countH}");
 
-                if (enteredTeamName.isEmpty) {
+                setState(() => isLoading = true);
+
+                try {
+                  String enteredTeamName =
+                      teamNameController.text.trim().toUpperCase();
+                  print("Team name: ${enteredTeamName}");
+
+                  if (enteredTeamName.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please enter a team name")),
+                    );
+                    return;
+                  }
+
+                  // Check if team name exists in Firestore
+                  DocumentSnapshot teamDoc = await _firestore
+                      .collection("teams")
+                      .doc(enteredTeamName)
+                      .get();
+
+                  if (teamDoc.exists) {
+                    // Store the team name in Hive
+                    teamBox.put('teamName', enteredTeamName);
+
+                    // If the team exists, proceed to the next screen
+                    Navigator.pushReplacementNamed(context, '/teamRegisterPage',
+                        arguments: {
+                          "teamName": enteredTeamName,
+                        });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              "Invalid team name. Please check and try again.")),
+                    );
+                  }
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Please enter a team name")),
+                    SnackBar(content: Text("Error: ${e.toString()}")),
                   );
-                  return;
-                }
-
-                // Check if team name exists in Firestore
-                DocumentSnapshot teamDoc = await _firestore
-                    .collection("teams")
-                    .doc(enteredTeamName)
-                    .get();
-
-                if (teamDoc.exists) {
-                  // Store the team name in Hive
-                  teamBox.put('teamName', enteredTeamName);
-
-                  // If the team exists, proceed to the next screen
-                  Navigator.pushReplacementNamed(context, '/teamRegisterPage',
-                      arguments: {
-                        "teamName": enteredTeamName,
-                      });
-                } else {
-                  // If the team does not exist, show an error
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            "Invalid team name. Please check and try again.")),
-                  );
+                } finally {
+                  if (mounted) {
+                    setState(() => isLoading = false);
+                  }
                 }
               },
             ),

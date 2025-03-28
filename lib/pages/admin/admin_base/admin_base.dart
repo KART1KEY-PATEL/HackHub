@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/pages/admin/admin_approval/admin_approval_page.dart';
 import 'package:hacknow/pages/admin/admin_home/admin_home_page.dart';
+import 'package:hacknow/pages/chat_page/chat_page.dart';
 import 'package:hacknow/pages/participants/paticipants_home/paticipants_home_page.dart';
 
 class AdminBase extends StatefulWidget {
@@ -14,6 +15,7 @@ class _AdminBaseState extends State<AdminBase> {
   bool isCompany = false;
   List _screens = [
     AdminHomePage(),
+    ChatPage(),
     AdminApprovalPage()
     // StorePage(),
     // TrainingPage(),
@@ -57,20 +59,12 @@ class _AdminBaseState extends State<AdminBase> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Chats',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.check),
               label: 'Approvals',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
             ),
           ],
         ),

@@ -40,7 +40,8 @@ class _TeamDetailsState extends State<TeamDetails> {
 
   Future<void> fetchTeamDetails() async {
     try {
-      // Get the team document from Firestore
+      if (!mounted) return; // 🔥 Ensure widget is still in the tree
+
       DocumentSnapshot teamSnapshot =
           await firestore.collection("teams").doc(teamName).get();
 
@@ -48,7 +49,6 @@ class _TeamDetailsState extends State<TeamDetails> {
         var teamData = teamSnapshot.data() as Map<String, dynamic>;
         List<dynamic> teamMemberIds = teamData['teamMembers'] ?? [];
 
-        // Fetch user details for each member
         List<Map<String, dynamic>> membersList = [];
 
         for (String memberId in teamMemberIds) {
@@ -66,20 +66,26 @@ class _TeamDetailsState extends State<TeamDetails> {
           }
         }
 
-        setState(() {
-          teamMembersDetails = membersList;
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            teamMembersDetails = membersList;
+            isLoading = false;
+          });
+        }
       } else {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching team details: $e");
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
       }
-    } catch (e) {
-      print("Error fetching team details: $e");
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
@@ -92,22 +98,40 @@ class _TeamDetailsState extends State<TeamDetails> {
     }
 
     if (status.isGranted) {
-      // Open Scanner after permission is granted
       String? scannedUUID = await Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => QRScannerScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => QRScannerScreen()),
       );
+      if (scannedUUID == null || scannedUUID.isEmpty) {
+        print("Error: Scanned QR code is empty or null.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("❌ Invalid QR Code."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+
       if (scannedUUID != null) {
         try {
+          print("Scanned QR Code: $scannedUUID"); // Debugging
           DocumentSnapshot qrDoc = await firestore
               .collection("registrationQR")
               .doc(scannedUUID)
               .get();
+          if (!qrDoc.exists) {
+            print("Error: QR Code does not exist in Firestore.");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("❌ QR Code not found in the database."),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+            return;
+          }
 
           if (qrDoc.exists) {
-            // Update the document with the team name
             await firestore
                 .collection("registrationQR")
                 .doc(scannedUUID)
@@ -115,36 +139,41 @@ class _TeamDetailsState extends State<TeamDetails> {
               "teamName": teamName,
             });
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("✅ Team name updated successfully!"),
-                backgroundColor: Colors.greenAccent,
-              ),
-            );
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TeamApprovalPage(
-                  teamName: teamName,
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("✅ Team name updated successfully!"),
+                  backgroundColor: Colors.greenAccent,
                 ),
-              ),
-            );
+              );
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TeamApprovalPage(teamName: teamName),
+                ),
+              );
+            }
           } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("❌ QR Code not registered!"),
+                  backgroundColor: Colors.redAccent,
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          print("Error updating QR Code: $e");
+          if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text("❌ QR Code not registered!"),
+                content: Text("❌ Error processing QR Code."),
                 backgroundColor: Colors.redAccent,
               ),
             );
           }
-        } catch (e) {
-          print("Error updating QR Code: $e");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("❌ Error processing QR Code."),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
         }
       }
     } else {
@@ -167,116 +196,122 @@ class _TeamDetailsState extends State<TeamDetails> {
           ? Center(child: CircularProgressIndicator())
           : teamMembersDetails.isEmpty
               ? Center(child: Text("No team members found."))
-              : Column(
-                  children: [
-                    Expanded(
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) {
-                          return SizedBox(
-                            height: sH * 0.01,
-                          );
-                        },
-                        itemCount: teamMembersDetails.length,
-                        itemBuilder: (context, index) {
-                          var member = teamMembersDetails[index];
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
+                              height: sH * 0.01,
+                            );
+                          },
+                          itemCount: teamMembersDetails.length,
+                          itemBuilder: (context, index) {
+                            var member = teamMembersDetails[index];
 
-                          return Stack(
-                            children: [
-                              Container(
-                                // height: sH * 0.,
-                                padding: EdgeInsets.all(10),
-                                width: sW,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: CustomColor.secondaryColor,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // SizedBox(
-                                        //   height: sH * 0.02,
-                                        // ),
-                                        txt("Name: ${member["name"]}",
-                                            size: sW * 0.05, isBold: true),
-                                        txt(
-                                          "Username: ${member["username"]}",
-                                          size: sW * 0.04,
-                                        ),
-                                        txt(
-                                          "Password: ${member["password"]}",
-                                          size: sW * 0.04,
-                                        ),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                    Column(
-                                      children: [
-                                        SizedBox(
-                                          height: sH * 0.02,
-                                        ),
-                                        Icon(
-                                          Icons.person,
-                                          size: sW * 0.2,
-                                          color: CustomColor.primaryButtonColor,
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: Container(
+                            return Stack(
+                              children: [
+                                Container(
+                                  // height: sH * 0.,
+                                  padding: EdgeInsets.all(10),
+                                  width: sW,
                                   decoration: BoxDecoration(
-                                    color: index == 0
-                                        ? Colors.red
-                                        : CustomColor.secondaryButtonColor,
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(10),
-                                      bottomLeft: Radius.circular(10),
-                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: CustomColor.secondaryColor,
                                   ),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: sW * 0.03,
-                                    vertical: sH * 0.004,
-                                  ),
-                                  child: txt(
-                                    index == 0 ? "Team Leader" : "Team Members",
-                                    size: sH * 0.018,
-                                    color: index == 0
-                                        ? Colors.white
-                                        : Colors.black,
-                                    isBold: true,
+                                  child: Row(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // SizedBox(
+                                          //   height: sH * 0.02,
+                                          // ),
+                                          txt("Name: ${member["name"]}",
+                                              size: sW * 0.05, isBold: true),
+                                          txt(
+                                            "Username: ${member["username"]}",
+                                            size: sW * 0.04,
+                                          ),
+                                          txt(
+                                            "Password: ${member["password"]}",
+                                            size: sW * 0.04,
+                                          ),
+                                        ],
+                                      ),
+                                      Spacer(),
+                                      Column(
+                                        children: [
+                                          SizedBox(
+                                            height: sH * 0.02,
+                                          ),
+                                          Icon(
+                                            Icons.person,
+                                            size: sW * 0.2,
+                                            color:
+                                                CustomColor.primaryButtonColor,
+                                          ),
+                                        ],
+                                      )
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: index == 0
+                                          ? Colors.red
+                                          : CustomColor.secondaryButtonColor,
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: sW * 0.03,
+                                      vertical: sH * 0.004,
+                                    ),
+                                    child: txt(
+                                      index == 0
+                                          ? "Team Leader"
+                                          : "Team Members",
+                                      size: sH * 0.018,
+                                      color: index == 0
+                                          ? Colors.white
+                                          : Colors.black,
+                                      isBold: true,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
-                      onPressed: () => scanQRCode(context),
-                      child: Text(
-                        "Scan QR Code",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () => scanQRCode(context),
+                        child: Text(
+                          "Scan QR Code",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
     );
   }
@@ -294,6 +329,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     torchEnabled: false,
   );
 
+  bool isScanning = false; // Prevent multiple scans
+
   @override
   void initState() {
     super.initState();
@@ -302,7 +339,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     });
   }
 
-  // Check if camera permission is granted, else request
   Future<void> checkCameraPermission() async {
     var status = await Permission.camera.status;
 
@@ -317,7 +353,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           backgroundColor: Colors.redAccent,
         ),
       );
-      Navigator.pop(context); // Close Scanner if permission is denied
+      Navigator.pop(context);
     }
   }
 
@@ -325,23 +361,28 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(
-          title: ("Scan QR Code"),
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ))),
+        title: ("Scan QR Code"),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+        ),
+      ),
       body: Stack(
         alignment: Alignment.center,
         children: [
           MobileScanner(
             controller: cameraController,
             onDetect: (capture) {
-              final List<Barcode> barcodes = capture.barcodes;
-              if (barcodes.isNotEmpty) {
-                String scannedData = barcodes.first.rawValue ?? "";
-                Navigator.pop(context, scannedData); // Return scanned UUID
+              if (!isScanning) {
+                isScanning = true; // Prevent multiple scans
+                final List<Barcode> barcodes = capture.barcodes;
+                if (barcodes.isNotEmpty) {
+                  String scannedData = barcodes.first.rawValue ?? "";
+                  print("Scanned Data: $scannedData"); // Debugging
+                  Navigator.pop(context, scannedData);
+                } else {
+                  print("Error: No QR code data found.");
+                }
               }
             },
           ),

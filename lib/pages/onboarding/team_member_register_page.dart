@@ -173,6 +173,7 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                     String password = UserModel.generatePassword(firstName);
 
                     UserModel user = UserModel(
+                      teamId: teamName,
                       userType: "participant",
                       firstName: firstName,
                       lastName: "", // Modify if needed
@@ -185,6 +186,14 @@ class _TeamMemberPageState extends State<TeamMemberPage> {
                       password: password,
                       id: userId,
                     );
+                    await firestore.collection("food").doc(userId).set({
+                      "meal1": false,
+                      "meal2": false,
+                      "meal3": false,
+                      "volunteerForMeal1": "",
+                      "volunteerForMeal2": "",
+                      "volunteerForMeal3": "",
+                    });
 
                     // Save to Firestore (Users Collection)
                     await firestore.collection("users").doc(userId).set({

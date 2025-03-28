@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hacknow/constants/custom_color.dart';
+import 'package:hacknow/pages/chat_page/chat_page.dart';
 import 'package:hacknow/pages/leader_board/leader_board_page.dart';
 import 'package:hacknow/pages/participants/participant_team/participant_team_page.dart';
 import 'package:hacknow/pages/participants/participants_food/participants_food.dart';
@@ -16,6 +17,7 @@ class _ParticipantBaseState extends State<ParticipantBase> {
   List _screens = [
     ParticipantHomePage(),
     LeaderBoardPage(),
+    ChatPage(),
     FoodScreen(),
     ParticipantTeamDetails(),
   ];
@@ -55,6 +57,10 @@ class _ParticipantBaseState extends State<ParticipantBase> {
             BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart),
               label: 'Leader Board',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'Chats',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.food_bank),

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/pages/admin/admin_approval/admin_approval_page.dart';
 import 'package:hacknow/pages/admin/admin_home/admin_home_page.dart';
+import 'package:hacknow/pages/chat_page/chat_page.dart';
+import 'package:hacknow/pages/leader_board/leader_board_page.dart';
 import 'package:hacknow/pages/participants/paticipants_home/paticipants_home_page.dart';
+import 'package:hacknow/pages/volunteer/volunteer_food/volunteer_food.dart';
 import 'package:hacknow/pages/volunteer/volunteer_home/volunteer_home_page.dart';
 import 'package:hacknow/pages/volunteer/volunteer_registration_desk/volunteer_registration_desk_page.dart';
 
@@ -16,10 +19,10 @@ class _VolunteerBaseState extends State<VolunteerBase> {
   bool isCompany = false;
   List _screens = [
     VolunteerHomePage(),
-    VolunteerRegistrationDeskPage()
-    // StorePage(),
-    // TrainingPage(),
-    // UpdatePage(),
+    VolunteerRegistrationDeskPage(),
+    ChatPage(),
+    LeaderBoardPage(),
+    VolunteerFood(),
   ];
   int _currentIndex = 0;
 
@@ -63,16 +66,16 @@ class _VolunteerBaseState extends State<VolunteerBase> {
               label: 'Approvals',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.chat),
+              label: 'Chats',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.bar_chart),
+              label: 'Leader Board',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.abc),
-              label: 'Settings',
+              icon: Icon(Icons.food_bank),
+              label: 'Food',
             ),
           ],
         ),
