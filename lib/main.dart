@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hacknow/controller/base_controller.dart';
+import 'package:hacknow/controller/team_controller.dart';
 import 'package:hacknow/controller/user_controller.dart';
 import 'package:hacknow/firebase_options.dart';
 import 'package:hacknow/model/user_model.dart';
@@ -9,6 +10,7 @@ import 'package:hacknow/pages/onboarding/admin_login_page.dart';
 import 'package:hacknow/pages/onboarding/admin_register_page.dart';
 import 'package:hacknow/pages/onboarding/approval_page.dart';
 import 'package:hacknow/pages/onboarding/team_approval_page.dart';
+import 'package:hacknow/pages/onboarding/team_confirmation_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_login_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_signup_page.dart';
 import 'package:hacknow/pages/participants/participants_food/participants_food.dart';
@@ -42,6 +44,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserController()),
+        ChangeNotifierProvider(create: (_) => TeamController()),
         ChangeNotifierProvider(create: (_) => SelectedIndexNotifier()),
       ],
       child: MyApp(),
@@ -107,6 +110,7 @@ class MyApp extends StatelessWidget {
         '/splash': (context) => SplashScreen(),
         // '/': (context) => UserTypeChoose(),
         '/teamLeaderPage': (context) => TeamLeaderPage(),
+        '/teamConfirmationPage': (context) => TeamConfirmationPage(),
         '/teamRegisterPage': (context) => TeamRegisterPage(),
         '/teamMemberPage': (context) => TeamMemberPage(),
         '/teamDetails': (context) => TeamDetails(),

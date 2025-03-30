@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hacknow/controller/team_controller.dart';
 import 'package:hacknow/controller/user_controller.dart';
 import 'package:hacknow/model/user_model.dart';
 import 'package:hacknow/services/backend_service.dart';
 import 'package:hacknow/utils/custom_app_bar.dart';
 import 'package:hacknow/utils/next_button.dart';
 import 'package:hacknow/utils/text_util.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,18 +40,21 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     teamName = arguments['teamName'];
+    Provider.of<TeamController>(context, listen: false).setTeamName(teamName);
   }
 
   bool isPhoneNumberValid(String phoneNumber) {
     return RegExp(r'^[0-9]{10}$').hasMatch(phoneNumber);
   }
 
-  bool isLoading = false; // Move isLoading to class level
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     UserController userController =
         Provider.of<UserController>(context, listen: false);
+    TeamController teamController =
+        Provider.of<TeamController>(context, listen: false);
 
     var sW = MediaQuery.of(context).size.width;
     var sH = MediaQuery.of(context).size.height;
@@ -61,9 +64,7 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
         title: "Team Leader Details",
         elevation: 0,
         leading: IconButton(
-          onPressed: isLoading
-              ? null
-              : () => Navigator.pop(context), // Disable back when load
+          onPressed: isLoading ? null : () => Navigator.pop(context),
           icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
@@ -95,7 +96,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                         },
                       ),
                       SizedBox(height: sH * 0.02),
-
                       txt("Team Leader Last Name", size: sW * 0.035),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -110,7 +110,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                         },
                       ),
                       SizedBox(height: sH * 0.02),
-
                       txt("Team Leader Phone Number", size: sW * 0.035),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -130,7 +129,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                         },
                       ),
                       SizedBox(height: sH * 0.02),
-
                       txt("Team Leader College Name", size: sW * 0.035),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -145,8 +143,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                         },
                       ),
                       SizedBox(height: sH * 0.02),
-
-                      // Gender Dropdown
                       txt("Team Leader Gender", size: sW * 0.035),
                       const SizedBox(height: 8.0),
                       DropdownButtonFormField<String>(
@@ -168,7 +164,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                         },
                       ),
                       SizedBox(height: sH * 0.02),
-
                       txt("External Participant", size: sW * 0.035),
                       const SizedBox(height: 8.0),
                       DropdownButtonFormField<String>(
@@ -190,7 +185,6 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                         },
                       ),
                       SizedBox(height: sH * 0.02),
-
                       txt("Team Size", size: sW * 0.035),
                       const SizedBox(height: 8.0),
                       DropdownButtonFormField<String>(
@@ -209,6 +203,7 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                           setState(() {
                             teamSize = value!;
                           });
+                          teamController.setTeamSize(int.parse(value!));
                         },
                       ),
                       SizedBox(height: sH * 0.05),
@@ -220,7 +215,7 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                 title: "Submit",
                 isLoading: isLoading,
                 onTapFunction: () async {
-                  if (isLoading) return; // Prevent multiple taps
+                  if (isLoading) return;
 
                   setState(() => isLoading = true);
 
@@ -232,79 +227,26 @@ class _TeamRegisterPageState extends State<TeamRegisterPage> {
                       String password =
                           UserModel.generatePassword(firstNameController.text);
 
-                      await _firestore.collection("users").doc(userId).set({
-                        "id": userId,
-                        "firstName": firstNameController.text,
-                        "lastName": lastNameController.text,
-                        "phoneNumber": phoneNumberController.text,
-                        "collegeName": collegeNameController.text,
-                        "gender": selectedGender,
-                        "external": selectedExternal == "True",
-                        "teamId": teamName,
-                        "userType": "participant",
-                        "username": username,
-                        "password": password,
-                      });
-
-                      // Second Firestore operation
-                      await _firestore.collection("food").doc(userId).set({
-                        "meal1": false,
-                        "meal2": false,
-                        "meal3": false,
-                        "meal4": false,
-                        "meal5": false,
-                        "meal6": false,
-                        "meal7": false,
-                        "meal8": false,
-                        "volunteerForMeal1": "",
-                        "volunteerForMeal2": "",
-                        "volunteerForMeal3": "",
-                        "volunteerForMeal4": "",
-                        "volunteerForMeal5": "",
-                        "volunteerForMeal6": "",
-                        "volunteerForMeal7": "",
-                        "volunteerForMeal8": "",
-                      });
-
-                      DocumentReference teamRef =
-                          _firestore.collection("teams").doc(teamName);
-
-                      await teamRef.update({
-                        "teamLeaderId": userId,
-                        "teamMembers": FieldValue.arrayUnion([userId]),
-                        "teamSize": int.parse(teamSize),
-                      }).catchError((error) async {
-                        await teamRef.set({
-                          "name": teamName,
-                          "registered": false,
-                          "teamLeaderId": userId,
-                          "teamMembers": [userId],
-                        });
-                      });
-
-                      // Store user data in Hive
-                      var userBox = Hive.box<UserModel>('userBox');
-                      UserModel user = UserModel(
-                        teamId: teamName,
+                      // Store user data in UserController
+                      userController.setUserData(
                         id: userId,
-                        approved: true,
-                        userType: "participant",
                         firstName: firstNameController.text,
                         lastName: lastNameController.text,
                         phoneNumber: phoneNumberController.text,
                         collegeName: collegeNameController.text,
-                        external: selectedExternal == "True",
                         gender: selectedGender,
+                        external: selectedExternal == "True",
+                        teamId: teamName,
+                        userType: "participant",
                         username: username,
                         password: password,
                       );
-                      userBox.put("currentUser", user);
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content:
-                                Text("User and team updated successfully!")),
-                      );
+                      // Store team data in TeamController
+                      teamController.setTeamLeaderId(userId);
+                      teamController.addTeamMember(userId);
+                      teamController.addTeamMemberDetails(userController.user!);
+                      teamController.setTeamSize(int.parse(teamSize));
 
                       Navigator.pushNamed(
                         context,

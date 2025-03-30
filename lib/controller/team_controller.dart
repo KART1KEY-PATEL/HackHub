@@ -7,6 +7,7 @@ class TeamController with ChangeNotifier {
   List<String> _teamMembers = [];
   int _teamSize = 2;
   bool _registered = false;
+  List<UserModel> _teamMemberDetails = [];
 
   // Getters
   String? get teamName => _teamName;
@@ -14,6 +15,7 @@ class TeamController with ChangeNotifier {
   List<String> get teamMembers => _teamMembers;
   int get teamSize => _teamSize;
   bool get registered => _registered;
+  List<UserModel> get teamMemberDetails => _teamMemberDetails;
 
   // Setters
   void setTeamName(String name) {
@@ -26,6 +28,12 @@ class TeamController with ChangeNotifier {
     notifyListeners();
   }
 
+  void clearTeamMembers() {
+    _teamMembers.clear();
+    _teamMemberDetails.clear();
+    notifyListeners();
+  }
+
   void addTeamMember(String memberId) {
     _teamMembers.add(memberId);
     notifyListeners();
@@ -34,6 +42,15 @@ class TeamController with ChangeNotifier {
   void setTeamSize(int size) {
     _teamSize = size;
     notifyListeners();
+  }
+
+  // Add this method to your TeamController class
+  void addTeamMemberDetails(UserModel member) {
+    // Check if member already exists in the list
+    if (!_teamMemberDetails.any((existing) => existing.id == member.id)) {
+      _teamMemberDetails.add(member);
+      notifyListeners();
+    }
   }
 
   void setRegistered(bool status) {
