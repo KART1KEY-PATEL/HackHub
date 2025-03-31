@@ -38,6 +38,7 @@ class _TeamMemberLoginPageState extends State<TeamMemberLoginPage> {
 
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var userBox = await Hive.openBox<UserModel>('userBox');
+    final Box teamBox = Hive.box('teamBox');
 
     try {
       QuerySnapshot usersSnapshot = await firestore.collection("users").get();
@@ -67,6 +68,8 @@ class _TeamMemberLoginPageState extends State<TeamMemberLoginPage> {
 
             // Store in Hive
             await userBox.put("currentUser", user);
+
+            teamBox.put('teamName', user.teamId);
 
             print("✅ User logged in successfully: ${user.firstName}");
 

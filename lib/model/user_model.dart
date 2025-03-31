@@ -50,20 +50,20 @@ class UserModel {
 
   // Ensure `fromJson` handles missing values properly
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    print("User Data; json ${json}");
     return UserModel(
-      userType: json["userType"] ?? "participant",
-      firstName: json["firstName"] ?? "",
-      lastName: json["lastName"] ?? "",
-      phoneNumber: json["phoneNumber"] ?? "",
-      collegeName: json["collegeName"] ?? "",
-      external: json["external"] ?? false,
-      gender: json["gender"] ?? "Male",
-      username: json["username"] ?? "Unknown",
-      password: json["password"] ?? "Unknown@1234",
-      approved: json['approved'] ?? false,
-      id: json['id'] ?? "",
-      teamId: json['teamId'] ?? ""
-    );
+        userType: json["userType"] ?? "participant",
+        firstName: json["firstName"] ?? "",
+        lastName: json["lastName"] ?? "",
+        phoneNumber: json["phoneNumber"] ?? "",
+        collegeName: json["collegeName"] ?? "",
+        external: json["external"] ?? false,
+        gender: json["gender"] ?? "Male",
+        username: json["username"] ?? "Unknown",
+        password: json["password"] ?? "Unknown@1234",
+        approved: json['approved'] ?? false,
+        id: json['id'] ?? "",
+        teamId: json['teamId'] ?? "");
   }
 
   static String generateUsername(String name, String phone) {
@@ -79,4 +79,3 @@ class UserModel {
     return '$namePart@$randomDigits';
   }
 }
-

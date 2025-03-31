@@ -3,6 +3,7 @@ import 'package:hacknow/constants/custom_color.dart';
 import 'package:hacknow/pages/chat_page/chat_page.dart';
 import 'package:hacknow/pages/leader_board/leader_board_page.dart';
 import 'package:hacknow/pages/participants/participant_team/participant_team_page.dart';
+import 'package:hacknow/pages/participants/participants_food/new_participant_food.dart';
 import 'package:hacknow/pages/participants/participants_food/participants_food.dart';
 import 'package:hacknow/pages/participants/paticipants_home/paticipants_home_page.dart';
 
@@ -18,7 +19,8 @@ class _ParticipantBaseState extends State<ParticipantBase> {
     ParticipantHomePage(),
     LeaderBoardPage(),
     ChatPage(),
-    FoodScreen(),
+    // FoodScreen(),
+    NewParticipantFood(),
     ParticipantTeamDetails(),
   ];
   int _currentIndex = 0;

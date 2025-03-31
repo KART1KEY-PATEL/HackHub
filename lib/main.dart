@@ -13,8 +13,9 @@ import 'package:hacknow/pages/onboarding/team_approval_page.dart';
 import 'package:hacknow/pages/onboarding/team_confirmation_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_login_page.dart';
 import 'package:hacknow/pages/onboarding/volunteer_signup_page.dart';
+import 'package:hacknow/pages/participants/participants_food/new_participant_food.dart';
 import 'package:hacknow/pages/participants/participants_food/participants_food.dart';
-import 'package:hacknow/pages/participants/participants_food/qr_results_page.dart';
+import 'package:hacknow/pages/volunteer/volunteer_food/qr_results_page.dart';
 import 'package:hacknow/pages/participants/paticipants_base/paticipants_base.dart';
 import 'package:hacknow/pages/onboarding/login_page.dart';
 import 'package:hacknow/pages/onboarding/splash_screen.dart';
@@ -124,7 +125,7 @@ class MyApp extends StatelessWidget {
         '/volunteerLoginPage': (context) => VolunteerLoginPage(),
         '/volunteerBase': (context) => VolunteerBase(),
         '/participantQrPage': (context) => ParticipantQrPage(),
-        '/participantFood': (context) => FoodScreen(),
+        '/participantFood': (context) => NewParticipantFood(),
         "/participantHomePage": (context) => ParticipantHomePage(),
         "/volunteer_food_qr": (context) => VolunteerFood()
       },

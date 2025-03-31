@@ -5,6 +5,7 @@ import 'package:hacknow/pages/admin/admin_home/admin_home_page.dart';
 import 'package:hacknow/pages/chat_page/chat_page.dart';
 import 'package:hacknow/pages/leader_board/leader_board_page.dart';
 import 'package:hacknow/pages/participants/paticipants_home/paticipants_home_page.dart';
+import 'package:hacknow/pages/volunteer/volunteer_food/new_volunteer_food.dart';
 import 'package:hacknow/pages/volunteer/volunteer_food/volunteer_food.dart';
 import 'package:hacknow/pages/volunteer/volunteer_home/volunteer_home_page.dart';
 import 'package:hacknow/pages/volunteer/volunteer_registration_desk/volunteer_registration_desk_page.dart';
@@ -22,7 +23,8 @@ class _VolunteerBaseState extends State<VolunteerBase> {
     VolunteerRegistrationDeskPage(),
     ChatPage(),
     LeaderBoardPage(),
-    VolunteerFood(),
+    // VolunteerFood(),
+    NewVolunteerFood(),
   ];
   int _currentIndex = 0;
 
