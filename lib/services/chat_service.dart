@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hacknow/model/chat_model.dart';
+import 'package:hacknow/model/message_model.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String chatDocId = "chat"; 
+  final String chatDocId = "chat";
   Stream<List<ChatMessage>> getChatMessages() {
     return _firestore
         .collection("chats")
@@ -18,24 +19,15 @@ class ChatService {
       List<ChatMessage> messages = messagesData
           .map((msg) => ChatMessage.fromMap(msg as Map<String, dynamic>))
           .toList();
-      messages
-          .sort((a, b) => b.timestamp.compareTo(a.timestamp)); //  Sort DESC
+      messages.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+      // messages
+      //     .sort((a, b) => b.timestamp.compareTo(a.timestamp)); //  Sort DESC
       return messages;
     });
   }
 
-  Future<void> sendMessage(String message, String createdBy, String userType,
-      {String? teamName, String? image}) async {
-    final newMessage = {
-      "message": message,
-      "createdBy": createdBy,
-      "userType": userType,
-      "teamName":
-          userType == "participant" ? teamName : null,
-      "image": image ?? "",
-      "timeStamp": Timestamp
-          .now(), 
-    };
+  Future<void> sendMessage({ChatMessage? message}) async {
+    final newMessage = message!.toMap();
 
     final chatRef = _firestore.collection("chats").doc(chatDocId);
 

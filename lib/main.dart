@@ -6,6 +6,7 @@ import 'package:hacknow/controller/user_controller.dart';
 import 'package:hacknow/firebase_options.dart';
 import 'package:hacknow/model/user_model.dart';
 import 'package:hacknow/pages/admin/admin_base/admin_base.dart';
+import 'package:hacknow/pages/chat_page/ticket_page.dart';
 import 'package:hacknow/pages/onboarding/admin_login_page.dart';
 import 'package:hacknow/pages/onboarding/admin_register_page.dart';
 import 'package:hacknow/pages/onboarding/approval_page.dart';
@@ -109,7 +110,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
-        // '/': (context) => UserTypeChoose(),
         '/teamLeaderPage': (context) => TeamLeaderPage(),
         '/teamConfirmationPage': (context) => TeamConfirmationPage(),
         '/teamRegisterPage': (context) => TeamRegisterPage(),
@@ -127,6 +127,7 @@ class MyApp extends StatelessWidget {
         '/participantQrPage': (context) => ParticipantQrPage(),
         '/participantFood': (context) => NewParticipantFood(),
         "/participantHomePage": (context) => ParticipantHomePage(),
+        "/createTicketPage": (context) => CreateTicketPage(),
         "/volunteer_food_qr": (context) => VolunteerFood()
       },
     );
