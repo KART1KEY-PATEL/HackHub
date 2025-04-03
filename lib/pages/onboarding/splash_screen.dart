@@ -127,12 +127,18 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                "assets/splash_logo.png",
-                height: 200,
-              ),
+             Center(
+  child: ClipOval(
+    child: Image.asset(
+      "assets/splash_logo.png",
+      height: 220,
+      width: 220, // Make width and height equal for perfect circle
+      fit: BoxFit.cover, // or BoxFit.contain depending on your needs
+    ),
+  ),
+),
               SizedBox(
-                height: 10,
+                height: 40,
               ),
               CircularProgressIndicator(
                 color: Color(0xFF4362FF),

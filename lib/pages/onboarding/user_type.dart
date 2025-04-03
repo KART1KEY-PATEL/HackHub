@@ -29,8 +29,16 @@ class UserTypeChoose extends StatelessWidget {
               height: sH * 0.2,
             ),
             Center(
-                child: Image.asset("assets/splash_logo.png",
-                    height: 220)), // App Logo
+              child: ClipOval(
+                child: Image.asset(
+                  "assets/splash_logo.png",
+                  height: 220,
+                  width: 220, // Make width and height equal for perfect circle
+                  fit:
+                      BoxFit.cover, // or BoxFit.contain depending on your needs
+                ),
+              ),
+            ),
             SizedBox(
               height: sH * 0.02,
             ),
@@ -58,7 +66,7 @@ class UserTypeChoose extends StatelessWidget {
                     weight: FontWeight.w500,
                   ),
                   txt(
-                    "Hack-N-Droid",
+                    "DevsHouse-25",
                     size: sH * 0.045,
                     color: CustomColor.primaryButtonColor,
                     weight: FontWeight.w700,
