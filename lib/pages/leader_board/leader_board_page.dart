@@ -16,7 +16,7 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Map<String, dynamic>>> fetchScores() async {
-    QuerySnapshot scoresSnapshot = await _firestore.collection('Scores').get();
+    QuerySnapshot scoresSnapshot = await _firestore.collection('scores').get();
 
     List<Map<String, dynamic>> teams = [];
 
@@ -150,7 +150,7 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
                           height: sH * 0.02,
                         );
                       },
-                      itemCount: teams.length,
+                      itemCount: (teams.length <= 20) ? teams.length : 20,
                       itemBuilder: (context, index) {
                         if (index == 0 || index == 1 || index == 2) {
                           return SizedBox();

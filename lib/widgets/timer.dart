@@ -252,14 +252,14 @@ class FlipClockPlus extends StatelessWidget {
 
     if (_showDays) {
       digitList.addAll([
-        // _buildSegment(
-        //     timeStream,
-        //     (DateTime time) =>
-        //         (timeLeft!.inDays > 99) ? 9 : (timeLeft!.inDays ~/ 10),
-        //     (DateTime time) =>
-        //         (timeLeft!.inDays > 99) ? 9 : (timeLeft!.inDays % 10),
-        //     startTime,
-        //     _daysLabelStr ?? "days"),
+        _buildSegment(
+            timeStream,
+            (DateTime time) =>
+                (timeLeft!.inDays > 99) ? 9 : (timeLeft!.inDays ~/ 10),
+            (DateTime time) =>
+                (timeLeft!.inDays > 99) ? 9 : (timeLeft!.inDays % 10),
+            startTime,
+            _daysLabelStr ?? "days"),
         Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

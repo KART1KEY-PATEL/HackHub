@@ -90,22 +90,42 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<String?> _getVolunteerName(String? userId) async {
+    if (userId == null) return null;
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (doc.exists) {
+        return doc.get('firstName'); // Assuming 'firstName' is the field name
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching volunteer name: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var sW = MediaQuery.of(context).size.width;
     var sH = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: customAppBar(title: ("Chat Page"), actions: [
-        currentUser!.userType == "participant"
-            ? TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/createTicketPage');
-                },
-                child: Text(
-                  "Create Ticket",
-                ),
-              )
-            : SizedBox(),
+        if (!isLoading)
+          currentUser!.userType == "participant"
+              ? TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/createTicketPage');
+                  },
+                  child: Text(
+                    "Create Ticket",
+                  ),
+                )
+              : SizedBox(),
       ]),
       body: isLoading
           ? const Center(child: CircularProgressIndicator()) // Show loading
@@ -203,7 +223,7 @@ class _ChatPageState extends State<ChatPage> {
                                           ? Alignment.centerRight
                                           : Alignment.centerLeft,
                                       child: Container(
-                                        width: sW * 0.6,
+                                        width: sW * 0.7,
                                         margin: const EdgeInsets.symmetric(
                                             vertical: 5, horizontal: 10),
                                         decoration: BoxDecoration(
@@ -219,7 +239,7 @@ class _ChatPageState extends State<ChatPage> {
                                           children: [
                                             FractionallySizedBox(
                                               child: Container(
-                                                width: sW * 0.6,
+                                                width: sW * 0.7,
                                                 padding: EdgeInsets.all(8),
                                                 decoration: BoxDecoration(
                                                   borderRadius:
@@ -235,10 +255,110 @@ class _ChatPageState extends State<ChatPage> {
                                                           ? Colors.blueAccent
                                                           : Colors.grey[800],
                                                 ),
-                                                child: txt(
-                                                  "Ticket - ${chat.issueType}",
-                                                  size: 16,
-                                                  weight: FontWeight.w700,
+                                                child: Row(
+                                                  children: [
+                                                    txt(
+                                                      "Ticket - ${chat.issueType}",
+                                                      size: 16,
+                                                      weight: FontWeight.w700,
+                                                    ),
+                                                    Spacer(),
+                                                    if (chat.assignedVolunteer !=
+                                                            null &&
+                                                        chat.assignedVolunteer ==
+                                                            currentUser!.id &&
+                                                        !chat.ticketClosed!)
+                                                      GestureDetector(
+                                                        onTap: () async {
+                                                          if (!chat
+                                                              .ticketClosed!) {
+                                                            try {
+                                                              // First get the current document to find the array index
+                                                              await FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'chats')
+                                                                  .doc('chat')
+                                                                  .update({
+                                                                'messages':
+                                                                    FieldValue
+                                                                        .arrayRemove([
+                                                                  chat.toMap()
+                                                                ]),
+                                                              });
+
+                                                              await FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'chats')
+                                                                  .doc('chat')
+                                                                  .update({
+                                                                'messages':
+                                                                    FieldValue
+                                                                        .arrayUnion([
+                                                                  {
+                                                                    ...chat
+                                                                        .toMap(),
+                                                                    'ticketClosed':
+                                                                        true
+                                                                  }
+                                                                ]),
+                                                              });
+                                                            } catch (e) {
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .showSnackBar(
+                                                                SnackBar(
+                                                                    content: Text(
+                                                                        'Error closing ticket: $e')),
+                                                              );
+                                                            }
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.red,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                            horizontal:
+                                                                sW * 0.02,
+                                                            vertical:
+                                                                sH * 0.007,
+                                                          ),
+                                                          child: txt(
+                                                            chat.ticketClosed!
+                                                                ? "Closed"
+                                                                : "Close Ticket",
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    if (chat.ticketClosed!)
+                                                      Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.red,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                        ),
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          horizontal: sW * 0.02,
+                                                          vertical: sH * 0.007,
+                                                        ),
+                                                        child: txt(
+                                                          "Closed",
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                  ],
                                                 ),
                                               ),
                                             ),
@@ -272,7 +392,7 @@ class _ChatPageState extends State<ChatPage> {
                                                       chat.image!.isNotEmpty)
                                                     Container(
                                                       // color: Colors.amber,
-                                                      width: sW * 0.6,
+                                                      // width: sW * 0.6,
                                                       height: sH * 0.04,
                                                       child: Row(
                                                         children: [
@@ -325,7 +445,7 @@ class _ChatPageState extends State<ChatPage> {
                                                                     .showSnackBar(
                                                                   const SnackBar(
                                                                       content: Text(
-                                                                          'You cannot view your own image')),
+                                                                          'You cannot view other teams ticket image')),
                                                                 );
                                                                 return;
                                                               }
@@ -353,31 +473,161 @@ class _ChatPageState extends State<ChatPage> {
                                                       ),
                                                       Spacer(),
                                                       if (currentUser!
-                                                              .userType ==
-                                                          "volunteer")
-                                                        Container(
-                                                          // width: sW * 0.25,
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                            horizontal: 7,
-                                                            vertical: 5,
-                                                          ),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .blueAccent,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        7),
-                                                          ),
-                                                          child: Center(
-                                                            child: txt(
-                                                              "Assign To Yourself",
-                                                              size: 12,
-                                                              weight: FontWeight
-                                                                  .w500,
-                                                            ),
+                                                                  .userType ==
+                                                              "volunteer" ||
+                                                          currentUser!.id ==
+                                                              chat.createdBy)
+                                                        GestureDetector(
+                                                          onTap: () async {
+                                                            if (chat.assignedVolunteer ==
+                                                                null) {
+                                                              try {
+                                                                // 1. Get current chat document
+                                                                final doc = await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'chats')
+                                                                    .doc('chat')
+                                                                    .get();
+
+                                                                // 2. Check for existing open tickets
+                                                                final messages =
+                                                                    doc.get('messages')
+                                                                            as List<dynamic>? ??
+                                                                        [];
+
+                                                                final hasOpenTicket = messages.any(
+                                                                    (message) =>
+                                                                        message['id'] !=
+                                                                            chat
+                                                                                .id && // Different ticket
+                                                                        message['assignedVolunteer'] ==
+                                                                            currentUser!
+                                                                                .id &&
+                                                                        (message['ticketClosed'] ==
+                                                                                null ||
+                                                                            !message['ticketClosed']));
+
+                                                                if (hasOpenTicket) {
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                          'You must close your current ticket first!'),
+                                                                      duration: Duration(
+                                                                          seconds:
+                                                                              2),
+                                                                    ),
+                                                                  );
+                                                                  return;
+                                                                }
+
+                                                                // 3. Proceed with assignment if no open tickets
+                                                                final updatedMessages =
+                                                                    messages.map(
+                                                                        (message) {
+                                                                  if (message[
+                                                                          'id'] ==
+                                                                      chat.id) {
+                                                                    return {
+                                                                      ...message,
+                                                                      'assignedVolunteer':
+                                                                          currentUser!
+                                                                              .id,
+                                                                    };
+                                                                  }
+                                                                  return message;
+                                                                }).toList();
+
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'chats')
+                                                                    .doc('chat')
+                                                                    .update({
+                                                                  'messages':
+                                                                      updatedMessages
+                                                                });
+
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                  const SnackBar(
+                                                                      content: Text(
+                                                                          'Successfully assigned to you!')),
+                                                                );
+                                                              } catch (e) {
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                  SnackBar(
+                                                                      content: Text(
+                                                                          'Error: ${e.toString()}')),
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                          child: FutureBuilder<
+                                                              String?>(
+                                                            future: _getVolunteerName(
+                                                                chat.assignedVolunteer),
+                                                            builder: (context,
+                                                                snapshot) {
+                                                              if (snapshot
+                                                                      .connectionState ==
+                                                                  ConnectionState
+                                                                      .waiting) {
+                                                                return const CircularProgressIndicator(
+                                                                  strokeWidth:
+                                                                      2,
+                                                                  valueColor: AlwaysStoppedAnimation<
+                                                                          Color>(
+                                                                      Colors
+                                                                          .white),
+                                                                );
+                                                              }
+
+                                                              return Container(
+                                                                // width: sW * 0.25,
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                  horizontal: 7,
+                                                                  vertical: 5,
+                                                                ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: currentUser!
+                                                                              .userType ==
+                                                                          'volunteer'
+                                                                      ? Colors
+                                                                          .blueAccent
+                                                                      : Colors.grey[
+                                                                          800],
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              7),
+                                                                ),
+                                                                child: Center(
+                                                                  child: txt(
+                                                                    (chat.assignedVolunteer ==
+                                                                                null &&
+                                                                            currentUser!.userType ==
+                                                                                "volunteer")
+                                                                        ? "Assign To Yourself"
+                                                                        : (chat.assignedVolunteer ==
+                                                                                null)
+                                                                            ? "To be Assigned"
+                                                                            : "Assigned To: ${snapshot.data ?? 'Unknown'}",
+                                                                    size: 12,
+                                                                    weight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            },
                                                           ),
                                                         ),
                                                     ],
@@ -434,6 +684,7 @@ class _ChatPageState extends State<ChatPage> {
           createdBy: currentUser!.id,
           userType: currentUser!.userType,
           messageType: MessageType.message,
+          ticketClosed: false,
           teamName: currentUser!.userType == "participant" ? teamName : null,
           issueType: '');
       _chatService.sendMessage(

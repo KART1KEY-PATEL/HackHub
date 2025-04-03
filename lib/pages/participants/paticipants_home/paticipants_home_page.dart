@@ -104,7 +104,7 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
                           digitSize: sW * 0.12,
                           height: sH * 0.08,
                           spacing: EdgeInsets.all(2),
-                          width: sW * 0.13,
+                          width: sW * 0.095,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(3.0)),
                           onDone: () {
@@ -124,7 +124,7 @@ class _ParticipantHomePageState extends State<ParticipantHomePage> {
               child: StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('annoucements')
-                    .doc('rr1eEn9498nuIcJaKqAe')
+                    .doc('zt7DpcjgtimlgyRHrTqX')
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data == null) {

@@ -325,6 +325,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                     return;
                   }
                   ChatMessage message = ChatMessage(
+                    ticketClosed: false,
                     message: _messageController.text,
                     createdBy: currentUser!.id,
                     userType: currentUser!.userType,

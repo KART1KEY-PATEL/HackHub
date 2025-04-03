@@ -65,7 +65,39 @@ class _TeamMemberLoginPageState extends State<TeamMemberLoginPage> {
               approved: true,
               id: userData['id'] ?? "",
             );
+            if (user.userType == "participant") {
+              if (user.teamId.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("No team assigned! Contact support.")),
+                );
+                setState(() => isLoading = false);
+                return;
+              }
 
+              DocumentSnapshot teamSnapshot =
+                  await firestore.collection('teams').doc(user.teamId).get();
+
+              if (!teamSnapshot.exists) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Team not found in registry!")),
+                );
+                setState(() => isLoading = false);
+                return;
+              }
+
+              bool isRegistered = teamSnapshot['registered'] ?? false;
+              if (!isRegistered) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        "Team not registered! Please have your team leader scan the QR code at registration desk."),
+                    duration: Duration(seconds: 5),
+                  ),
+                );
+                setState(() => isLoading = false);
+                return;
+              }
+            }
             // Store in Hive
             await userBox.put("currentUser", user);
 

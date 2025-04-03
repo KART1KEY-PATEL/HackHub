@@ -25,6 +25,7 @@ class _VolunteerHomePageState extends State<VolunteerHomePage> {
     super.initState();
     _fetchHackEndTime();
   }
+
   Future<void> _fetchHackEndTime() async {
     try {
       DocumentSnapshot settingsSnapshot = await FirebaseFirestore.instance
@@ -93,6 +94,8 @@ class _VolunteerHomePageState extends State<VolunteerHomePage> {
                       : FlipClockPlus.reverseCountdown(
                           separator: SizedBox(width: sW * 0.01),
                           duration: Duration(
+                            days: _timeRemaining
+                                .inDays, // Use total days (ignores hours)
                             hours: _timeRemaining
                                 .inHours, // Use total hours (ignores days)
                             minutes: _timeRemaining.inMinutes.remainder(60),
@@ -103,7 +106,7 @@ class _VolunteerHomePageState extends State<VolunteerHomePage> {
                           digitSize: sW * 0.12,
                           height: sH * 0.08,
                           spacing: EdgeInsets.all(2),
-                          width: sW * 0.13,
+                          width: sW * 0.095,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(3.0)),
                           onDone: () {
@@ -123,7 +126,7 @@ class _VolunteerHomePageState extends State<VolunteerHomePage> {
               child: StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('annoucements')
-                    .doc('rr1eEn9498nuIcJaKqAe')
+                    .doc('zt7DpcjgtimlgyRHrTqX')
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data == null) {

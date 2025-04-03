@@ -44,6 +44,7 @@ class ChatMessage {
   String? id;
   final MessageType messageType;
   final String issueType;
+  bool? ticketClosed;
 
   ChatMessage({
     required this.message,
@@ -56,6 +57,7 @@ class ChatMessage {
     this.id,
     required this.messageType,
     required this.issueType,
+    this.ticketClosed,
   }) : timeStamp = timeStamp ?? Timestamp.now();
 
   Map<String, dynamic> toMap() {
@@ -69,6 +71,7 @@ class ChatMessage {
       'messageType': messageType.name, // Convert enum to string
       'issueType': issueType,
       'assignedVolunteer': assignedVolunteer,
+      'ticketClosed': ticketClosed,
       'id': id ?? const Uuid().v4(),
     };
   }
@@ -84,6 +87,7 @@ class ChatMessage {
       assignedVolunteer: map['assignedVolunteer'],
       timeStamp: map['timeStamp'],
       id: map['id'],
+      ticketClosed: map['ticketClosed'],
       messageType: MessageTypeExtension.fromString(
           map['messageType'] ?? 'message'), // Convert string to enum
     );
