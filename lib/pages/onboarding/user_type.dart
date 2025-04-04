@@ -66,7 +66,7 @@ class UserTypeChoose extends StatelessWidget {
                     weight: FontWeight.w500,
                   ),
                   txt(
-                    "DevsHouse-25",
+                    "DevsHouse '25",
                     size: sH * 0.045,
                     color: CustomColor.primaryButtonColor,
                     weight: FontWeight.w700,

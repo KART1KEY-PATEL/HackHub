@@ -108,8 +108,6 @@ class _TeamMemberLoginPageState extends State<TeamMemberLoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Login successful!")),
             );
-
-            // Navigate to home page after login
             Navigator.pushReplacementNamed(context, '/participantBase');
             return;
           } else {

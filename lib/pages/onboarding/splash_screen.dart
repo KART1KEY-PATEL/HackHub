@@ -127,16 +127,16 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-             Center(
-  child: ClipOval(
-    child: Image.asset(
-      "assets/splash_logo.png",
-      height: 220,
-      width: 220, // Make width and height equal for perfect circle
-      fit: BoxFit.cover, // or BoxFit.contain depending on your needs
-    ),
-  ),
-),
+              Center(
+                child: ClipOval(
+                  child: Image.asset(
+                    "assets/splash_logo.png",
+                    height: 220,
+                    width: 220,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 40,
               ),

@@ -232,7 +232,7 @@ class _VolunteerRegistrationDeskPageState
       children: [
         QrImageView(
           data: uuid,
-          size: 200,
+          size: 300,
           backgroundColor: Colors.white,
         ),
         const SizedBox(height: 10),
@@ -245,23 +245,28 @@ class _VolunteerRegistrationDeskPageState
   }
 
   Widget _buildTeamDetails(double sW, double sH, String teamName) {
-    return Column(
-      children: [
-        Icon(Icons.group, size: 100, color: Colors.greenAccent),
-        const SizedBox(height: 10),
-        Text(
-          "✅ Team Assigned: $teamName",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Icon(Icons.group, size: 100, color: Colors.greenAccent),
+          const SizedBox(height: 10),
+          Text(
+            "✅ Team Assigned: $teamName",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        _buildTeamMembersList(sW, sH),
-        _buildRegistrationButton(),
-        _buildGenerateButton(sW, sH),
-      ],
+          const SizedBox(height: 20),
+          _buildTeamMembersList(sW, sH),
+          _buildRegistrationButton(),
+          SizedBox(
+            height: sH * 0.03,
+          ),
+          _buildGenerateButton(sW, sH),
+        ],
+      ),
     );
   }
 
@@ -271,13 +276,50 @@ class _VolunteerRegistrationDeskPageState
             onPressed: () => _fetchTeamMembers(assignedTeamName!),
             child: Text("Load Team Members"),
           )
-        : SizedBox(
-            height: sH * 0.35,
-            child: ListView.separated(
-              separatorBuilder: (_, __) => SizedBox(height: sH * 0.02),
-              itemCount: teamMembers.length,
-              itemBuilder: (context, index) => _buildMemberRow(sW, index),
-            ),
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    width: sW * 0.5,
+                    child: Text(
+                      "Team Members",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    width: sW * 0.17,
+                    child: txt(
+                      "IOS Status",
+                    ),
+                  ),
+                  SizedBox(
+                    width: sW * 0.02,
+                  ),
+                  SizedBox(
+                    width: sW * 0.17,
+                    child: txt("Attendance Status",
+                        size: sW * 0.03, color: Colors.white, maxLine: 1),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: sH * 0.35,
+                child: ListView.separated(
+                    shrinkWrap: true,
+                    separatorBuilder: (_, __) => SizedBox(height: sH * 0.02),
+                    itemCount: teamMembers.length,
+                    itemBuilder: (context, index) {
+                      return _buildMemberRow(sW, index);
+                    }),
+              ),
+            ],
           );
   }
 
@@ -296,18 +338,25 @@ class _VolunteerRegistrationDeskPageState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 txt(member, size: sW * 0.04, maxLine: 1),
+                
                 txt(email, size: sW * 0.03, color: Colors.grey, maxLine: 1),
               ],
             ),
           ),
           const Spacer(),
-          Checkbox(
-            value: checkboxStatesIOS[email] ?? false,
-            onChanged: (value) => _updateIOSStatus(email, value!),
+          SizedBox(
+            width: sW * 0.18,
+            child: Checkbox(
+              value: checkboxStatesIOS[email] ?? false,
+              onChanged: (value) => _updateIOSStatus(email, value!),
+            ),
           ),
-          Checkbox(
-            value: checkboxStatesAttendance[email] ?? false,
-            onChanged: (value) => _updateAttendanceStatus(email, value!),
+          SizedBox(
+            width: sW * 0.18,
+            child: Checkbox(
+              value: checkboxStatesAttendance[email] ?? false,
+              onChanged: (value) => _updateAttendanceStatus(email, value!),
+            ),
           ),
         ],
       ),

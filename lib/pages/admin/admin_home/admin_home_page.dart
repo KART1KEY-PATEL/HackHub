@@ -90,6 +90,21 @@ class _AdminHomePageState extends State<AdminHomePage> {
           ),
           ElevatedButton(
             onPressed: () async {
+              try {
+                // await backendservice.backupFoodToFirestore();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Generate qr")),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Error backing up users: $e")),
+                );
+              }
+            },
+            child: Text("Generate qr"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
               await backendservice.deleteDuplicateUsers();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
